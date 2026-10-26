@@ -1,0 +1,19 @@
+{
+  "id": "blind-dew-tropical",
+  "note": "盲算（memo §3.2 独立复算）：A-E 1996，γ=ln0.6+17.625×35/278.04=1.7078300，Td=243.04×1.7078300/15.9171700=26.076933（memo 26.08 交叉一致）。裕度 32−26.076933=5.923067 ≥ 1.5 通过。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": { "mode": "given", "tSupplyC": 32 },
+      "flows": [{ "id": "n1", "qLpm": 12 }],
+      "loads": [{ "id": "n1", "qW": 0 }],
+      "room": { "tAirC": 35, "rhPct": 60, "minDewMarginK": 1.5 }
+    }
+  },
+  "checks": [
+    { "path": "dewPointC", "kind": "closeTo", "value": 26.07693, "tol": 2e-5 },
+    { "path": "dewMarginK", "kind": "closeTo", "value": 5.92307, "tol": 5e-4 },
+    { "path": "dewPass", "kind": "flag", "value": true }
+  ]
+}

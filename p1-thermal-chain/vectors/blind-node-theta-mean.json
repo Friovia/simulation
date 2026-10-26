@@ -1,0 +1,17 @@
+{
+  "id": "blind-node-theta-mean",
+  "note": "盲算：同 blind-node-energy 的 ΔT=12.485249，θ 参考=平均液温 T̄=32+12.485249/2=38.242624 → T_case=38.242624+0.02×1000=58.242624（mean 口径比 inlet 高 ΔT/2=6.24 K）。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": { "mode": "given", "tSupplyC": 32 },
+      "flows": [{ "id": "n1", "qLpm": 12 }],
+      "loads": [{ "id": "n1", "qW": 10000, "hotSpot": { "qW": 1000, "thetaKPerW": 0.02, "thetaRef": "mean", "tCaseMaxC": 75 } }]
+    }
+  },
+  "checks": [
+    { "path": "nodes[0].tCaseRefC", "kind": "closeTo", "value": 38.242624, "tol": 1e-5 },
+    { "path": "nodes[0].tCaseC", "kind": "closeTo", "value": 58.242624, "tol": 1e-5 }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "id": "f7-speed-zero",
+  "note": "F7 回归向量：speedHz=0 物理上泵已停，必须拒绝（输入无效），修复前曾静默按额定转速计算",
+  "input": {
+    "schema": "p0/v0.1",
+    "case": {
+      "tSupplyC": 32,
+      "tReturnC": 45,
+      "pump": {
+        "curveId": "p1",
+        "yIs": "kPa",
+        "ratedHz": 60,
+        "speedHz": 0
+      },
+      "branches": [
+        {
+          "id": "b",
+          "curveIds": [
+            "br"
+          ]
+        }
+      ]
+    },
+    "curves": {
+      "p1": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            200
+          ],
+          [
+            125,
+            150
+          ],
+          [
+            250,
+            100
+          ]
+        ]
+      },
+      "br": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            0
+          ],
+          [
+            200,
+            25
+          ],
+          [
+            400,
+            50
+          ]
+        ]
+      }
+    }
+  },
+  "expectConverged": false,
+  "checks": [
+    {
+      "path": "qTotalLpm",
+      "kind": "warningIncludes",
+      "value": "speedHz 必须 > 0"
+    },
+    {
+      "path": "",
+      "kind": "exitCode",
+      "value": 2
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "invalid-hx-nonlinear",
+  "note": "输入无效路径：hx 曲线点 [2,61] 偏离过原点直线（61≠60.5）→ Q∝ATD 模型前提破坏，入口拒绝。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": {
+        "mode": "hx",
+        "hx": { "mode": "slope", "curveId": "hx-bad", "ratedTcsLpm": 120 },
+        "fws": { "supplyC": 29, "flowLpm": 100, "cpJkgK": 4180, "rhoKgM3": 1000 }
+      },
+      "flows": [{ "id": "n1", "qLpm": 49.45 }],
+      "loads": [{ "id": "n1", "qW": 40000 }]
+    },
+    "curves": {
+      "hx-bad": {
+        "x": "°C", "y": "kW",
+        "points": [[0, 0], [2, 61], [4, 121], [6, 181.5]]
+      }
+    }
+  },
+  "checks": [{ "path": "", "kind": "inputInvalidIncludes", "value": "过原点直线" }],
+  "expectConverged": false
+}

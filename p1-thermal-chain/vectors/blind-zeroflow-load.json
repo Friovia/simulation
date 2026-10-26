@@ -1,0 +1,21 @@
+{
+  "id": "blind-zeroflow-load",
+  "note": "零流量带载：n1 q=0 带 6 kW → 液温无界，tOut/T_case 不出数，converged=false（信任红旗而非输入错误）。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": { "mode": "given", "tSupplyC": 32 },
+      "flows": [
+        { "id": "n1", "qLpm": 0 },
+        { "id": "n2", "qLpm": 12 }
+      ],
+      "loads": [
+        { "id": "n1", "qW": 6000 },
+        { "id": "n2", "qW": 6000 }
+      ]
+    }
+  },
+  "checks": [{ "path": "", "kind": "warningIncludes", "value": "零流量" }],
+  "expectConverged": false
+}

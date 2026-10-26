@@ -1,0 +1,82 @@
+{
+  "id": "f3-all-off",
+  "note": "F3 失败路径向量：全部支路关断无解，归输入无效（CLI 应退 2）",
+  "input": {
+    "schema": "p0/v0.1",
+    "case": {
+      "tSupplyC": 32,
+      "tReturnC": 45,
+      "pump": {
+        "curveId": "p1",
+        "yIs": "kPa"
+      },
+      "branches": [
+        {
+          "id": "a",
+          "curveIds": [
+            "br"
+          ],
+          "shutdown": true
+        },
+        {
+          "id": "b",
+          "curveIds": [
+            "br"
+          ],
+          "shutdown": true
+        }
+      ]
+    },
+    "curves": {
+      "p1": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            200
+          ],
+          [
+            125,
+            150
+          ],
+          [
+            250,
+            100
+          ]
+        ]
+      },
+      "br": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            0
+          ],
+          [
+            200,
+            25
+          ],
+          [
+            400,
+            50
+          ]
+        ]
+      }
+    }
+  },
+  "expectConverged": false,
+  "checks": [
+    {
+      "path": "qTotalLpm",
+      "kind": "warningIncludes",
+      "value": "全部支路关断"
+    },
+    {
+      "path": "",
+      "kind": "exitCode",
+      "value": 2
+    }
+  ]
+}

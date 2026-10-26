@@ -1,0 +1,41 @@
+{
+  "id": "blind-busbar-50c",
+  "note": "盲算（温度修正闭式）：同 blind-busbar-20c 但导体 50°C。ρ(50)=1.7241e-8×(1+0.00393×30)=1.7241e-8×1.1179=1.92748e-8 Ω·m（+11.79%）→R_total=8.6205e-5×1.1179=9.63685695e-5 Ω→压降 0.0963685695 V、损耗 96.3685695 W（初版盲算 9.63698e-5 为乘法进位误差，已重推勘误）。热阻损耗正反馈（I²R 自热）由 tC 评估温度承担，温升本身是红灯。",
+  "input": {
+    "schema": "p3/v0.1",
+    "case": {
+      "nominalV": 48,
+      "currentA": 1000,
+      "tC": 50,
+      "maxDropPct": 1,
+      "segs": [
+        {
+          "id": "trunk-a",
+          "material": "copper-iacs",
+          "areaMm2": 800,
+          "lenM": 2
+        }
+      ]
+    }
+  },
+  "checks": [
+    {
+      "path": "segments[0].rTotalOhm",
+      "kind": "closeTo",
+      "value": 9.63685695e-05,
+      "tol": 1e-09
+    },
+    {
+      "path": "totalDropV",
+      "kind": "closeTo",
+      "value": 0.0963685695,
+      "tol": 1e-09
+    },
+    {
+      "path": "totalLossW",
+      "kind": "closeTo",
+      "value": 96.3685695,
+      "tol": 1e-09
+    }
+  ]
+}

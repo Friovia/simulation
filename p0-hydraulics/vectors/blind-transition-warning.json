@@ -1,0 +1,22 @@
+{
+  "id": "blind-transition-warning",
+  "note": "盲算（过渡带告警，2026-10-20 摩擦式评审产出）：温和泵+单支路 19.1mm×2.5m(k=2) 平衡点 q≈5.6 L/min。手算 Re：v=5.6e-3/60/(π/4×0.0191²)=0.3257 m/s；物性 tMean=37°C 插值 ρ≈1024.1、μ≈1.70mPa·s → Re≈0.3257×0.0191×1024.1/1.70e-3≈3750 ∈ [2300,4000] 过渡带 → 告警必触发（Churchill 对拍：该区两关联式差 20-25%）。向量锁定：告警文本 + converged + exitCode。",
+  "input": {
+    "schema": "p0/v0.1",
+    "case": {
+      "tSupplyC": 32,
+      "tReturnC": 42,
+      "pump": { "curveId": "p", "yIs": "kPa" },
+      "branches": [{ "id": "b1", "curveIds": ["cp"], "pipe": { "dMm": 19.1, "lenM": 2.5, "k": 2 } }]
+    },
+    "curves": {
+      "p": { "x": "L/min", "y": "kPa", "points": [[0, 12], [3, 11], [6, 10], [9, 8], [12, 5]] },
+      "cp": { "x": "L/min", "y": "kPa", "points": [[0, 0], [2, 1.5], [4, 5], [6, 11], [8, 19]] }
+    }
+  },
+  "checks": [
+    { "kind": "warningIncludes", "value": "b1 Re=" },
+    { "kind": "warningIncludes", "value": "落过渡带 2300–4000" },
+    { "kind": "exitCode", "value": 0 }
+  ]
+}

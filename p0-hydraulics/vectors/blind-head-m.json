@@ -1,0 +1,104 @@
+{
+  "id": "blind-head-m",
+  "note": "盲算闭式解（独立于求解器实现）：yIs=m 泵 3 共线点 (0,20),(100,16),(200,12) → H(Q)=20−0.04Q；T_mean=(30+40)/2=35°C 恰落 LC25 表 5°C 网格点 → ρ=1025.2，c=ρg/1000=9.80665×1025.2/1000=10.05377758 kPa/m。换算后泵方程 ΔP=A−B·Q：A=c·20=201.0755516 kPa，B=c·0.04=0.402151103 kPa/(L/min)；支路 br1 3 共线点 → m=1.6。稳态 (B+m)q*=A → q*=201.0755516/2.002151103=100.429758 L/min；P*=m·q*=160.687613 kPa（=A−B·q*，泵支两侧恒等互验）；pumpHeadM=泵曲线在查表点 q* 处的原扬程=20−0.04·q*=15.982810 m，亦等于 P*·1000/(ρg)（双路径互验）。工作点严格域内：泵 100.430∈(0,200)、支路 100.430∈(0,150)，无钳位。已用自写分段线性插值+压力双层二分独立数值求解，全部量与闭式解差<1e-9。",
+  "input": {
+    "schema": "p0/v0.1",
+    "case": {
+      "tSupplyC": 30,
+      "tReturnC": 40,
+      "pump": {
+        "curveId": "pump-h",
+        "yIs": "m"
+      },
+      "branches": [
+        {
+          "id": "only",
+          "curveIds": [
+            "br1"
+          ]
+        }
+      ]
+    },
+    "curves": {
+      "pump-h": {
+        "x": "L/min",
+        "y": "m",
+        "points": [
+          [
+            0,
+            20
+          ],
+          [
+            100,
+            16
+          ],
+          [
+            200,
+            12
+          ]
+        ]
+      },
+      "br1": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            0
+          ],
+          [
+            75,
+            120
+          ],
+          [
+            150,
+            240
+          ]
+        ]
+      }
+    }
+  },
+  "checks": [
+    {
+      "path": "qTotalLpm",
+      "kind": "closeTo",
+      "value": 100.42975841265167,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].qLpm",
+      "kind": "closeTo",
+      "value": 100.42975841265167,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].dpKPa",
+      "kind": "closeTo",
+      "value": 160.6876134602427,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].sharePct",
+      "kind": "closeTo",
+      "value": 100,
+      "tol": 0.000001
+    },
+    {
+      "path": "pumpDpKPa",
+      "kind": "closeTo",
+      "value": 160.6876134602427,
+      "tol": 0.000001
+    },
+    {
+      "path": "pumpHeadM",
+      "kind": "closeTo",
+      "value": 15.982809663493933,
+      "tol": 0.000001
+    },
+    {
+      "path": "residual",
+      "kind": "lessThan",
+      "value": 1e-8
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "id": "blind-busbar-20c",
+  "note": "盲算（闭式）：80×10 mm 铜排（800 mm²）2 m 单程，1000 A @20°C。R_单程=1.7241e-8×2/8e-4=4.31025e-5 Ω；供+回 R_total=8.6205e-5 Ω；压降=1000×8.6205e-5=0.086205 V；损耗=1000²×8.6205e-5=86.205 W；@48V 压降率=0.086205/48=0.179594%，末端 47.913795 V。",
+  "input": {
+    "schema": "p3/v0.1",
+    "case": {
+      "nominalV": 48,
+      "currentA": 1000,
+      "tC": 20,
+      "maxDropPct": 1,
+      "segs": [
+        {
+          "id": "trunk-a",
+          "material": "copper-iacs",
+          "areaMm2": 800,
+          "lenM": 2
+        }
+      ]
+    }
+  },
+  "checks": [
+    {
+      "path": "segments[0].rOneWayOhm",
+      "kind": "closeTo",
+      "value": 4.31025e-05,
+      "tol": 1e-09
+    },
+    {
+      "path": "segments[0].rTotalOhm",
+      "kind": "closeTo",
+      "value": 8.6205e-05,
+      "tol": 1e-09
+    },
+    {
+      "path": "totalDropV",
+      "kind": "closeTo",
+      "value": 0.086205,
+      "tol": 1e-09
+    },
+    {
+      "path": "totalLossW",
+      "kind": "closeTo",
+      "value": 86.205,
+      "tol": 1e-09
+    },
+    {
+      "path": "dropPct",
+      "kind": "closeTo",
+      "value": 0.17959375,
+      "tol": 1e-09
+    },
+    {
+      "path": "endVoltageV",
+      "kind": "closeTo",
+      "value": 47.913795,
+      "tol": 1e-09
+    },
+    {
+      "path": "pass",
+      "kind": "flag",
+      "value": true
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "id": "blind-pump-coastdown",
+  "note": "盲算（泵惰转 v0.3，rack demo 基础上叠加）：Grundfos MS6000 表点 9.2 kW → J=0.00507 kg·m²（精确表值）；ω0=2π×3480/60=364.4248 rad/s；T0=9200/364.4247478=25.2452668 N·m；τ_coast=J·ω0/T0=0.00507×364.4247478/25.2452668=0.0731873 s（初版手算 25.2464/0.07316 为进位误差，已重推勘误）（T∝ω² → ω(t)=ω0/(1+t/τ)，半速 73ms）。工程结论（warning 锁定）：转子惰转远快于环路热时间常数（本例 fluid-only τ≈3.12s）——断电后压头近乎立即消失，流量维持依赖 BBU 切换而非转子惯性。",
+  "input": {
+    "schema": "p2/v0.3",
+    "case": {
+      "fluid": "pg25",
+      "tMeanC": 35,
+      "pipes": [
+        {
+          "id": "supply-return",
+          "dMm": 50.8,
+          "lenM": 3,
+          "runs": 2
+        },
+        {
+          "id": "branch-1",
+          "dMm": 19.1,
+          "lenM": 2.5,
+          "runs": 2
+        }
+      ],
+      "pumpCoastdown": {
+        "shaftKw": 9.2,
+        "rpm": 3480,
+        "inertiaSource": "grundfos-ms6000"
+      },
+      "hxSlopeWKPerK": 30250,
+      "fwsSupplyC": 20,
+      "q0W": 40000,
+      "q1W": 80000,
+      "t0C": 21.3223,
+      "timesS": [
+        1
+      ]
+    }
+  },
+  "checks": [
+    {
+      "path": "pumpCoastdownOut.jKgm2",
+      "kind": "closeTo",
+      "value": 0.00507,
+      "tol": 1e-12
+    },
+    {
+      "path": "pumpCoastdownOut.tauCoastS",
+      "kind": "closeTo",
+      "value": 0.07318732194377892,
+      "tol": 1e-06
+    },
+    {
+      "path": "pumpCoastdownOut.inertiaClamped",
+      "kind": "flag",
+      "value": false
+    },
+    {
+      "kind": "warningIncludes",
+      "value": "泵惰转"
+    },
+    {
+      "kind": "exitCode",
+      "value": 0
+    }
+  ]
+}

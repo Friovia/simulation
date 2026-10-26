@@ -1,0 +1,22 @@
+{
+  "id": "blind-busbar-series",
+  "note": "盲算（串联两段闭式）：干线 800 mm²×2 m + 立排 400 mm²×1 m，恰好每段单程电阻相等（4.31025e-5 Ω）→R_total=2×(4.31025e-5+4.31025e-5)=1.7241e-4 Ω→压降 0.17241 V、损耗 172.41 W。",
+  "input": {
+    "schema": "p3/v0.1",
+    "case": {
+      "nominalV": 48,
+      "currentA": 1000,
+      "tC": 20,
+      "maxDropPct": 1,
+      "segs": [
+        { "id": "trunk", "material": "copper-iacs", "areaMm2": 800, "lenM": 2 },
+        { "id": "riser", "material": "copper-iacs", "areaMm2": 400, "lenM": 1 }
+      ]
+    }
+  },
+  "checks": [
+    { "path": "totalDropV", "kind": "closeTo", "value": 0.17241, "tol": 1e-9 },
+    { "path": "totalLossW", "kind": "closeTo", "value": 172.41, "tol": 1e-9 },
+    { "path": "endVoltageV", "kind": "closeTo", "value": 47.82759, "tol": 1e-9 }
+  ]
+}

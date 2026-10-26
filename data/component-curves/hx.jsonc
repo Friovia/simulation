@@ -1,0 +1,323 @@
+// 器件曲线库 —— CDU 液-液换热器（板式换热器）族
+// 数据政策见同目录 schema.md：无源不入库、绝不编数、缺口记 redlight。
+// retrieved 一律 2026-10-17。
+//
+// 关于本文件的曲线形态（重要）：
+// 所有厂商公开的 L2L CDU 换热数据都只有"X kW @ Y°C 接近温度(ATD)"单点额定，
+// 无人公开 ε-NTU 曲线、K·A(UA) 值或流量-换热量表（见文末红灯条目）。
+// 在固定两侧流量下，ε-NTU 理论给出 Q = [ε·C_min/(1 − ε·C_min/C_TCS)] × ATD，
+// 即换热量对 ATD（定义: TCS 供水 − FWS 供水，OCP 口径）严格过原点线性，
+// 斜率 = 厂商额定点 Q/ATD。各条目曲线点 = 过原点直线 + 厂商锚点，
+// 非锚点数值是物理推导值而非厂商数据（uncertainty 已逐条注明）。
+// 该斜率是"含 ε 折减的有效增益 kW/K"，不是 UA；UA 反演值仅出现在 uncertainty 注记。
+[
+  {
+    // Google Project Deschutes 5 开放规格，OCP Accepted；Envicool/Boyd/nVent 均有对应机型
+    "id": "hx-deschutes5-2mw",
+    "type": "hx",
+    "vendor": "Google (spec) / Envicool Deschutes 5, nVent Open CDU 5.0, Boyd",
+    "model": "Project Deschutes 5 CDU",
+    "fluid": { "basis": "未明示（CoolIT 同级对比口径为 TCS 侧 PG25；FWS 侧按冷冻水惯例）" },
+    "curve": {
+      "x": "°C",
+      "y": "kW",
+      "flowBasis": "额定流量 500 GPM (1890 LPM)；ATD=TCS供水−FWS供水（OCP 口径）",
+      "points": [[0, 0], [1.5, 1000], [3, 2000], [4.5, 3000]]
+    },
+    "source": {
+      "url": "https://www.opencompute.org/marketplace/facilities-physical-infrastructure/envicool-deschutes-5-cdu",
+      "type": "ocp-spec",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "仅 1 个厂商/规格锚点(2 MW @ 3°C ATD)；斜率 666.7 kW/K=Q/ATD，其余点为 ε-NTU 线性外推非厂商数据。500 GPM 未注明侧别（按 80 PSI 可用压差推断为 TCS 侧）；若 1890 LPM 为 TCS 水侧，ε≈0.83，UA 反演 0.34~0.67 MW/K（随一次侧流量假设 C* 0.6~1 变化）——推导值仅供量级。佐证：nVent Open CDU 5.0 同规格（https://www.nvent.com/en-us/data-solutions/ai-ready-liquid-cooling-power-built-open-standards），Boyd 同规格报道（https://www.hpcwire.com/off-the-wire/boyd-to-showcase-googles-2mw-project-deschutes-liquid-cooling-unit-at-ocp-summit-2025）",
+    "redlight": null
+  },
+  {
+    "id": "hx-vertiv-coolchip-cdu121",
+    "type": "hx",
+    "vendor": "Vertiv",
+    "model": "CoolChip CDU 121 (in-rack, 4U)",
+    "fluid": { "basis": "二次侧 Water 或 PG-25 with inhibitors（数据表口径）；一次侧未给" },
+    "curve": {
+      "x": "°C",
+      "y": "kW",
+      "flowBasis": "二次侧额定 120 L/min, 1.15 bar",
+      "points": [[0, 0], [2, 60.5], [4, 121], [6, 181.5]]
+    },
+    "source": {
+      "url": "https://www.vertiv.com/49c795/globalassets/products/thermal-management/high-density-solutions/vertiv-coolchip-cdu/vertiv-coolchip-cdu-100kw-data-sheet-sl-71348.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "官方数据表仅单点额定 121 kW @ 4°C ATD + 二次侧 120 L/min(≈1 L/min/kW)；一次侧流量完全未给，UA 无法反演。斜率 30.25 kW/K=121/4，非锚点为 ε-NTU 线性外推。工质水/PG25 双口径未区分额定条件",
+    "redlight": null
+  },
+  {
+    "id": "hx-nvent-cdu125",
+    "type": "hx",
+    "vendor": "nVent",
+    "model": "CDU125 (in-rack, 4U)",
+    "fluid": { "basis": "未明示（同页 TCS 表格提示典型 20–35% 乙二醇，未绑定该额定点）" },
+    "curve": {
+      "x": "°C",
+      "y": "kW",
+      "flowBasis": "一次侧≤170 LPM / 二次侧≤115(单泵)·125(双泵) LPM",
+      "points": [[0, 0], [3, 62.5], [6, 125], [9, 187.5]]
+    },
+    "source": {
+      "url": "https://www.nvent.com/en-us/data-solutions/coolant-distribution-unit",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "官方选型页单点额定 125 kW @ 6°C approach；流量列的是最大值而非该额定点工况，工质未注明。同页另标 Minimum Approach Temperature 4K（不同口径，未并入曲线）。斜率 20.83 kW/K=125/6，非锚点为 ε-NTU 线性外推",
+    "redlight": null
+  },
+  {
+    // 2026-10-20 更正：本条数据（40 kW @ 10K approach, 4U in-rack）经官方 spec sheet 证实属 RackChiller CDU40（SKU CDU0402R001），
+    // 原 id hx-nvent-cdu100 系上批从选型页抄录时型号归属错误，无代码引用，径改。
+    "id": "hx-nvent-rackchiller-cdu40",
+    "type": "hx",
+    "vendor": "nVent",
+    "model": "RackChiller CDU40 (in-rack, 4U, SKU CDU0402R001)",
+    "fluid": { "basis": "两侧均为 treated water with up to 25% PG（官方 spec 明示）" },
+    "curve": {
+      "x": "°C",
+      "y": "kW",
+      "flowBasis": "额定一次侧 64 LPM（max 80）/ 二次侧 60 LPM(双泵)·75 LPM(三泵)；40kW 额定点未注明侧别流量",
+      "points": [[0, 0], [5, 20], [10, 40], [15, 60]]
+    },
+    "source": {
+      "url": "https://d14aeh40s5zf9b.cloudfront.net/userfiles/productdocuments/HOFFCDU0402R001Q/SPEC_56278578_SpecificationSheet.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-20"
+    },
+    "uncertainty": "官方 spec sheet Spec-01466A（Cloudfront 官方 CDN 镜像；nvent.com 本体 403 反爬）原文：Cooling capacity 40 kW at 10 C Approach (64 LPM Primary)；Minimum approach 5K（下限，对应容量未公布，不可线性外推）。max head loss 0.1 bar@64LPM 一次侧；二次侧 60 LPM@0.5bar(双泵)/75 LPM@0.4bar(三泵)。交叉验证 dcatlas.io CDU40 页同数值。斜率 4.0 kW/K=40/10，非锚点为 ε-NTU 线性外推。40kW@10K 单点亦见 nVent 选型页（https://www.nvent.com/en-us/data-solutions/coolant-distribution-unit，2026-10-17 抄录，原 hx-nvent-cdu100 来源）",
+    "redlight": null
+  },
+  {
+    "id": "hx-nvent-rackchiller-cdu800",
+    "type": "hx",
+    "vendor": "nVent",
+    "model": "RackChiller CDU800 (in-row)",
+    "fluid": { "basis": "一次侧 水或≤20% PG；二次侧 水或≤30% PG（数据表口径，额定浓度未给）" },
+    "curve": {
+      "x": "°C",
+      "y": "kW",
+      "flowBasis": "一次侧 850 LPM / 二次侧最大 1100 LPM @ 2.6 bar",
+      "points": [[0, 0], [3, 400], [6, 800], [9, 1200]]
+    },
+    "source": {
+      "url": "https://www.nvent.com/sites/default/files/acquiadam/assets/Spec-01468_0.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "官方数据表 Spec-01468 单点额定 800+ kW @ 6K approach、一次侧 850 LPM；二次侧额定流量未给（仅最大 1100 LPM@2.6 bar）。斜率 133.3 kW/K=800/6，非锚点为 ε-NTU 线性外推。示例反演（假设两侧均按水、二次侧按 1100 LPM 额定、TCS=二次侧）：ε≈0.82、UA≈186 kW/K——强假设推导值，仅供量级。2025-10 新闻稿另有 800 kW@4K 口径（https://www.nvent.com/en-us/data-solutions/products/rackchiller-cdu800-coolant-distribution-unit），与数据表 6K 口径不一致，未并入",
+    "redlight": null
+  },
+  {
+    "id": "hx-coolit-chx2000",
+    "type": "hx",
+    "vendor": "CoolIT Systems",
+    "model": "CHx2000 (in-row, 750×1200 mm)",
+    "fluid": { "basis": "TCS 侧 PG25（厂商对比表口径）" },
+    "curve": {
+      "x": "°C",
+      "y": "kW",
+      "flowBasis": "TCS 侧 1.2 LPM/kW",
+      "points": [[0, 0], [2, 1134.5], [4, 2269], [6, 3403.5]]
+    },
+    "source": {
+      "url": "https://www.coolitsystems.com/resources/news/coolit-systems-announces-further-breakthroughs-in-row-based-coolant-distribution-unit-performance",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "来源为厂商官方新闻稿对比表：2269 kW @ 4°C ATD、PG25、secondary head 53 psi，页脚注明『Estimated … based on each maker\\u2019s nominal public data』（同表竞品行为 CoolIT 估算，自家行按自家数据）。二次侧流量仅给 1.2 LPM/kW 比例；若按 1.2 LPM/kW×2269 kW 折算 UA 反演约 0.57 MW/K（C*≈1 假设）——推导值仅供量级。斜率 567 kW/K=2269/4，非锚点为 ε-NTU 线性外推。另网络转载册（Scribd，非官方渠道）口径 2000 kW @ 5°C、2100/1800 LPM，未采用",
+    "redlight": null
+  },
+  {
+    "id": "hx-coolit-chx1500",
+    "type": "hx",
+    "vendor": "CoolIT Systems",
+    "model": "CHx1500 (in-row, 750×1200 mm)",
+    "fluid": { "basis": "TCS 侧 PG25（厂商对比表口径）" },
+    "curve": {
+      "x": "°C",
+      "y": "kW",
+      "flowBasis": "同族额定流量条件（CHx2000 口径）",
+      "points": [[0, 0], [2, 682], [4, 1364], [6, 2046]]
+    },
+    "source": {
+      "url": "https://www.coolitsystems.com/resources/news/coolit-systems-announces-further-breakthroughs-in-row-based-coolant-distribution-unit-performance",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "同 CHx2000 来源与口径（厂商对比表 1364 kW @ 4°C ATD、secondary head 44 psi，估算口径）。斜率 341 kW/K=1364/4，非锚点为 ε-NTU 线性外推；该型号单独流量未给",
+    "redlight": null
+  },
+  {
+    // 行业性缺口：无人公开 ε-NTU / UA / 流量-换热量表
+    "id": "hx-generic-cdu-ua-epsntu",
+    "type": "hx",
+    "vendor": "行业通用",
+    "model": "L2L CDU 内置板式换热器（ε-NTU / K·A）",
+    "fluid": { "basis": "N/A（无曲线）" },
+    "curve": null,
+    "source": {
+      "url": "https://www.opencompute.org/documents/ocp-wp-l-lcdu-test-methodology-performance-rating-r1-pdf",
+      "type": "ocp-spec",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "欠账占位条目，无数据",
+    "redlight": "缺 ε-NTU 曲线 / K·A(UA, kW/K) / 一二次侧流量-换热量表。查过渠道与结论：1) OCP《L2L CDU Test Methodology & Performance Rating》R1 2024-11（本条 source.url）——只定义评级口径(ATD=5°C、1.5 LPM/kW、in-rack TCS dP≤25psi/in-row≤40psi、FWS dP≤75psi)，示例图 Figure 6『ATD vs 热负荷』为示意曲线无数值表；2) OCP《CDU Performance & Specification Guidance for Modular TCS》草稿 v0.1（https://ocp-all.groups.io/g/OCP-DCF/attachment/559/1/OCP%20CDU%20Performance%20&%20Specification%20Guidance%20for%20Modular%20TCS.pdf）——规格/SLA 方法论草稿，无性能数据；3) Gheni et al. 2026 Applied Energy 实测+仿真 DLC 数据中心研究（https://www.sciencedirect.com/science/article/pii/S030626192501791X）——付费墙，公开摘要无 CDU 换热数值；4) Heydari et al. 2024 L2A CDU 深度评估（https://www.sciencedirect.com/science/article/pii/S2214157X24014928，实测 ε=0.83）——液-空气 CDU，非本族板换，仅作旁证不入库；5) 英维克官网公开 PDF 仅风液 L2A 机架 CDU 参数（https://en.envicool.com/upload/file/20250402/1743565940169841.pdf，XCRow006/016 一次侧为风），L2L CDU 无公开参数表；6) Vertiv CoolChip 121、nVent CDU100/125/CDU800、CoolIT CHx2000/1500、Motivair MCDU 全系数据表均只给『X kW @ Y°C approach』单点，无 UA/ε-NTU（见各条目 uncertainty）。结论：行业内 UA 级数据一律进 NDA/选型软件渠道；替代路径=按本文件线性斜率建模，或 commissioning 实测（schema 第 4 条 V&V L3）"
+  },
+  {
+    // Motivair：公开容量矩阵但无法反演 UA
+    "id": "hx-motivair-mcdu-family",
+    "type": "hx",
+    "vendor": "Motivair (Schneider Electric)",
+    "model": "MCDU-4U/10/25/40/45/50/55/70 全系",
+    "fluid": { "basis": "表头为二次侧 25% PG，脚注又称 100% 水额定——口径矛盾" },
+    "curve": null,
+    "source": {
+      "url": "https://www.motivaircorp.com/uploads/files/brochures/CDU%202026%20Motivair%20by%20SE.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "欠账占位条目：容量矩阵公开但不可反演 UA",
+    "redlight": "缺可用的流量-换热量表/UA。官方 2026 CDU 手册给 4 工况容量矩阵(MCDU-4U~70, 28~5040 kW)+名义一次/二次流量(GPM)，但：a) 各行 Q/ATD 有效斜率互相矛盾（MCDU-40: 1213 kW@ATD12.8K→95 kW/K、965 kW@ATD4K→241 kW/K、337 kW@ATD12.2K→27.6 kW/K、843 kW@ATD8.3K→101 kW/K），说明各行对应不同未注明的流量/工况，不构成同流量曲线族；b) 多数行 Q≈C_二次侧×ΔT_s（供回水温差锁定），容量是环路输运上限而非换热器限制，UA 信息量为零；c) 工质口径自相矛盾（表头 PG25、脚注 100% 水额定）。仅可作『百 kW~MW 级 CDU 的 Q/ATD 有效斜率约 28~240 kW/K』量级参考；确值需向 Motivair 索取选型报告"
+  },
+  {
+    // 板换厂商：型号级 UA 不公开，选型软件需注册
+    "id": "hx-platehx-vendor-ua",
+    "type": "hx",
+    "vendor": "SWEP / Alfa Laval / Danfoss（板换原厂）",
+    "model": "通用钎焊板式换热器（水-水单相）",
+    "fluid": { "basis": "N/A（无曲线）" },
+    "curve": null,
+    "source": {
+      "url": "https://www.swepgroup.com/support/ssp",
+      "type": "literature",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "欠账占位条目，无数据",
+    "redlight": "缺板换型号级 UA / U·A 随流量曲线。查过渠道：1) SWEP SSP™ 选型软件（https://ssp.swepgroup.com，输出含 kW/K 级热导）需注册账号，公开网页无示例输出；SWEP 单相在线选型器（https://customized-solution.swep.net/singlephase）须输入具体工况才返回结果，无公开数据表；2) Alfa Laval / Danfoss 公开资料同样只到选型器/代理渠道，首轮检索未见型号级 UA；3) 学术替代源不可用：DTU Mancini 2019 博士论文（https://orbit.dtu.dk/files/201155735/S268_Roberta_Mancini_PhD_Thesis.pdf）虽用 SSP G8 但案例为制冷剂蒸发侧非水-水；ScienceDirect 2023 板换选型方法学论文仅引用 SSP 未见公开 UA 库。后续动作：注册 SSP 按目标工况（PG25/水、CDU 级流量）跑选型拿 UA——即便到手也只是『量级参考』，不是 CDU 实配板换（CDU 厂家多为定制板片/叠片），uncertainty 须注明"
+  },
+  {
+    // ===== 2026-10-20 批次：20-80kW 中小容量段补库（4 路采集之一）=====
+    "id": "hx-envicool-xcrow040",
+    "type": "hx",
+    "vendor": "Envicool 英维克",
+    "model": "Coolinside In-rack CDU XCRow040 (4U, ORV3)",
+    "fluid": { "basis": "二次侧 SoluKing PG25；一次侧软化水（官方规格表明示）" },
+    "curve": {
+      "x": "°C",
+      "y": "kW",
+      "flowBasis": "二次侧（PG25）额定 60 LPM；一次侧流量未公布",
+      "points": [[0, 0], [2.5, 20], [5, 40], [7.5, 60]]
+    },
+    "source": {
+      "url": "https://en.envicool.com/upload/file/20250402/1743565940169841.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-20"
+    },
+    "uncertainty": "官方英文 PDF 规格表：Heat Exchange Capacity 40 kW；一次侧供液 35°C、二次侧供液 40°C（ATD=5K 为推导值非厂商原文）；二次侧流量 60 LPM。交叉核算：60 LPM PG25 带 40kW → 二次 ΔT≈10.4K，量级自洽。中文官网另有 15/30/80kW 营销口径（疑不同代产品），以英文 PDF 为准。斜率 8.0 kW/K=40/5（ATD 为推导值，斜率可信度低于厂商直标 ATD 的条目），非锚点为 ε-NTU 线性外推",
+    "redlight": null
+  },
+  {
+    "id": "hx-envicool-xcrow080",
+    "type": "hx",
+    "vendor": "Envicool 英维克",
+    "model": "Coolinside In-rack CDU XCRow080 (4U, ORV3)",
+    "fluid": { "basis": "二次侧 SoluKing PG25；一次侧软化水（官方规格表明示）" },
+    "curve": {
+      "x": "°C",
+      "y": "kW",
+      "flowBasis": "二次侧（PG25）额定 99 LPM；一次侧流量未公布",
+      "points": [[0, 0], [2.5, 40], [5, 80], [7.5, 120]]
+    },
+    "source": {
+      "url": "https://en.envicool.com/upload/file/20250402/1743565940169841.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-20"
+    },
+    "uncertainty": "同上 PDF：Heat Exchange Capacity 80 kW、二次侧 99 LPM、ATD=5K 推导值（40−35°C 供液口径）。斜率 16.0 kW/K=80/5（ATD 推导，可信度低于厂商直标条目），非锚点为 ε-NTU 线性外推",
+    "redlight": null
+  },
+  {
+    "id": "hx-coolit-chx80",
+    "type": "hx",
+    "vendor": "CoolIT Systems",
+    "model": "CHx80 (in-rack, 4U)",
+    "fluid": { "basis": "二次侧 25% PG（手册性能图口径）；一次侧 facility water" },
+    "curve": {
+      "x": "°C",
+      "y": "kW",
+      "flowBasis": "一次侧 65 LPM（OCP 白皮书额定点）；二次侧双泵 49/64 LPM 曲线族（手册，无量值表）",
+      "points": [[0, 0], [2.5, 40], [5, 80], [7.5, 120]]
+    },
+    "source": {
+      "url": "https://www.opencompute.org/wp-content/uploads/2026/07/a9657be0589027f6463375904b737de229429b22.pdf",
+      "type": "ocp-spec",
+      "retrieved": "2026-10-20"
+    },
+    "uncertainty": "OCP 白皮书（Cam Turner, CoolIT, Project Olympus DLC）原文：Approach Temperature = 5C @ W4, Qprimary=65 L/min（W4=45°C facility water）、CDU External Pressure Differential 7.5 PSI。交叉：厂商手册（readkong 转载非官网直链，https://www.readkong.com/page/reliable-direct-liquid-cooling-for-the-world-s-most-2748375）口径 80kW@30°C facility water，双泵 49/64 LPM 曲线族无量值表；官网营销页（https://www.coolitsystems.com/cdu-product/chx80）W17-W+ 无数值。斜率 16 kW/K=80/5，非锚点为 ε-NTU 线性外推",
+    "redlight": null
+  },
+  {
+    // 族内唯一双锚点条目：80kW@8K 与 110kW@11.5K 斜率自洽（10.0 vs 9.57 kW/K，±4%）
+    "id": "hx-boyd-ral110-4u",
+    "type": "hx",
+    "vendor": "Boyd (Eaton)",
+    "model": "4U L2L CDU RAL110-04U19 (19in rack)",
+    "fluid": { "basis": "二次侧 Water/EGW/PGW（对比表明示）；一次侧 FWS up to 45°C" },
+    "curve": {
+      "x": "°C",
+      "y": "kW",
+      "flowBasis": "二次侧额定 80 LPM @ 1.44 bar（=21.1 GPM @ 20.8 PSI）；一次侧 up to 140 LPM",
+      "points": [[0, 0], [4, 40], [8, 80], [11.5, 110]]
+    },
+    "source": {
+      "url": "https://info.boydcorp.com/hubfs/Thermal/Liquid-Cooling/CDU-Comparison.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-20"
+    },
+    "uncertainty": "Boyd 官方对比表双锚点：80 kW at 8°C approach / 110 kW at 11.5°C approach，两锚点斜率 10.0 与 9.57 kW/K 自洽（±4%）。单独 4U datasheet（Mouser 官方镜像，https://www.mouser.com/datasheet/2/2/Boyd_4U_Cooling_Distribution_Unit_CDU-3105078.pdf）标 80 kW @ 9.5°C approach（与对比表 8°C 版本差异，疑改版，记 dual-value）；FWS up to 140 LPM、TCS 10-100 LPM、TCS setpoint 25-60°C。非锚点为过原点线性外推",
+    "redlight": null
+  },
+  {
+    // L2A（液-气）条目：ATD 口径为供液-进风温差，与 L2L 条目不可混用、不可用于 P1 hx-slope 链路
+    "id": "hx-vertiv-coolchip-cdu70-l2a",
+    "type": "hx",
+    "vendor": "Vertiv",
+    "model": "CoolChip CDU 70 (in-row L2A, 液-风)",
+    "fluid": { "basis": "SFN 二次侧 Water or PG-25 with inhibitors（官方数据表明示）" },
+    "curve": {
+      "x": "°C",
+      "y": "kW",
+      "flowBasis": "二次侧额定 70 LPM；ATD=40°C 供液对 25°C 进风（液-风口径！）",
+      "points": [[0, 0], [7.5, 35], [15, 70], [22.5, 105]]
+    },
+    "source": {
+      "url": "https://www.vertiv.com/4a4963/globalassets/shared/vertiv-coolchip-cdu-70-data-sheet-sl-71252.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-20"
+    },
+    "uncertainty": "官方数据表 SL-71252：Nominal 70 kW @ 15°C ATD（at 40°C fluid supply，6 风机口径）= 进风 25°C；额定流量 70 LPM；风量 9500/11100 CMH；功耗 1.92 kW max。⚠️ 这是 liquid-to-air 行级换热器：x 轴 ATD 为供液-进风温差，与 L2L 条目（二供-一供）口径不同，禁止用于 P1 supplySource hx（液-液）链路。同族 L2A 参考：Boyd RAA22/RAA32（22/32 kW @ 24°C approach 液-风口径，https://info.boydcorp.com/hubfs/Thermal/Liquid-Cooling/CDU-Comparison.pdf）。斜率 4.67 kW/K=70/15，非锚点为线性外推",
+    "redlight": null
+  },
+  {
+    "id": "hx-coolit-chx40",
+    "type": "hx",
+    "vendor": "CoolIT Systems",
+    "model": "CHx40 (in-rack, 2U)",
+    "fluid": { "basis": "N/A（无锚点数值）" },
+    "curve": null,
+    "source": {
+      "url": "https://www.readkong.com/page/reliable-direct-liquid-cooling-for-the-world-s-most-2748375",
+      "type": "literature",
+      "retrieved": "2026-10-20"
+    },
+    "uncertainty": "欠账占位条目：40kW@30°C 一次侧供水（手册原文），一次侧 15/20 LPM 为曲线参变量",
+    "redlight": "缺 ATD 数值锚点。厂商手册（readkong 转载）只给 Cooling Capacity 40kW (@ 30°C facility water) 与性能曲线族（一次侧 15/20 LPM 参变，无量值表）；现行官网 /cdu-product/chx40 已 404（旧款疑停售）。交叉核算提示 40kW@20LPM 水侧 ΔT≈30K，额定工况依赖大温差，不可假定小 ATD。需向 CoolIT 索取现行 datasheet 或按曲线图数字化（本库政策：图不数字化）"
+  }
+]

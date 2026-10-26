@@ -1,0 +1,27 @@
+{
+  "id": "sym-2",
+  "note": "对称性 + 闭式解（v2，修复 F4：旧版工作点在钳位饱和区，数值无意义）。泵 A=150,B=0.2；支路 m=2 → 2q=150−0.4q → q*=62.5，Q*=125，P*=125 kPa，双支路流量严格相等各占 50%",
+  "input": {
+    "schema": "p0/v0.1",
+    "case": {
+      "tSupplyC": 32,
+      "tReturnC": 45,
+      "pump": { "curveId": "pump-sym", "yIs": "kPa" },
+      "branches": [
+        { "id": "a", "curveIds": ["cp-sym"] },
+        { "id": "b", "curveIds": ["cp-sym"] }
+      ]
+    },
+    "curves": {
+      "pump-sym": { "x": "L/min", "y": "kPa", "points": [[0, 150], [150, 120], [300, 90]] },
+      "cp-sym": { "x": "L/min", "y": "kPa", "points": [[0, 0], [80, 160], [160, 320]] }
+    }
+  },
+  "checks": [
+    { "path": "branches[0].qLpm", "kind": "equalsPath", "path2": "branches[1].qLpm", "tol": 1e-9 },
+    { "path": "branches[0].qLpm", "kind": "closeTo", "value": 62.5, "tol": 1e-6 },
+    { "path": "qTotalLpm", "kind": "closeTo", "value": 125, "tol": 1e-6 },
+    { "path": "branches[0].sharePct", "kind": "closeTo", "value": 50, "tol": 1e-9 },
+    { "path": "residual", "kind": "lessThan", "value": 1e-8 }
+  ]
+}

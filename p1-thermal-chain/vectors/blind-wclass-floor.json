@@ -1,0 +1,19 @@
+{
+  "id": "blind-wclass-floor",
+  "note": "ASHRAE 全级下限（官方表脚注 a）：供水 1.5°C < 2°C → wClassPass=false。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": { "mode": "given", "tSupplyC": 1.5 },
+      "flows": [{ "id": "n1", "qLpm": 12 }],
+      "loads": [{ "id": "n1", "qW": 0 }],
+      "wClass": "W17"
+    }
+  },
+  "checks": [
+    { "path": "wClassPass", "kind": "flag", "value": false },
+    { "path": "", "kind": "warningIncludes", "value": "下限" }
+  ],
+  "expectConverged": true
+}

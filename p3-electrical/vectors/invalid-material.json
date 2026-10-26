@@ -1,0 +1,19 @@
+{
+  "id": "invalid-material",
+  "note": "输入无效路径：material 非法（v0.1 仅 copper-iacs；铝排待有源登记后开放）→ inputInvalid，CLI 退 2。",
+  "input": {
+    "schema": "p3/v0.1",
+    "case": {
+      "nominalV": 48,
+      "currentA": 1000,
+      "tC": 20,
+      "maxDropPct": 1,
+      "segs": [{ "id": "trunk-a", "material": "aluminum", "areaMm2": 800, "lenM": 2 }]
+    }
+  },
+  "checks": [
+    { "path": "", "kind": "inputInvalidIncludes", "value": "material" },
+    { "path": "", "kind": "exitCode", "value": 2 }
+  ],
+  "expectConverged": false
+}

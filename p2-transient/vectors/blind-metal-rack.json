@@ -1,0 +1,46 @@
+{
+  "id": "blind-metal-rack",
+  "note": "盲算（rack-orv3 + 金属热容，v0.2）：流体部分同 blind-geometry-rack（volume=23.6218 L 手算、ρ(35)=1025.2/cp(35)=3900 表点 → C_fluid≈94446.5-94447 J/K，手算 π 链精度极限 ±0.2）。金属项（质量锚点见 thermo.ts 头注）：20×CPU 冷板 1.5kg 铜（Wakefield）=30kg×385=11550；集管 2×11.3kg SS316（nVent RCM42001 dry）=22.6kg×500=11300；裸机柜 145kg Q235（Cheval）×470=68150 → C_metal=91000 J/K（精确）。C_total≈185446.7 → τ≈185446.7/30250=6.130468 s（fluid-only 对照 ≈3.1222 s，金属项使 τ 翻近一倍）。t=τ 处 T=T_inf+(T0−T_inf)/e=22.6446281−1.3223281×0.36787944=22.15817°C。终温不变（稳态与热容无关）。",
+  "input": {
+    "schema": "p2/v0.2",
+    "case": {
+      "fluid": "pg25",
+      "tMeanC": 35,
+      "pipes": [
+        { "id": "supply-return", "dMm": 50.8, "lenM": 3, "runs": 2 },
+        { "id": "branch-1", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+        { "id": "branch-2", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+        { "id": "branch-3", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+        { "id": "branch-4", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+        { "id": "branch-5", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+        { "id": "branch-6", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+        { "id": "branch-7", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+        { "id": "branch-8", "dMm": 19.1, "lenM": 2.5, "runs": 2 }
+      ],
+      "metal": [
+        { "id": "coldplates-20x-cpu", "material": "copper-c11000", "massKg": 30 },
+        { "id": "manifold-pair-ss316", "material": "ss-316", "massKg": 22.6 },
+        { "id": "rack-frame-q235", "material": "steel-q235", "massKg": 145 }
+      ],
+      "hxSlopeWKPerK": 30250,
+      "fwsSupplyC": 20,
+      "q0W": 40000,
+      "q1W": 80000,
+      "t0C": 21.3223,
+      "timesS": [6.1304793]
+    }
+  },
+  "expectConverged": true,
+  "checks": [
+    { "path": "capWJK", "kind": "closeTo", "value": 94447, "tol": 5e-4 },
+    { "path": "metalCapWJK", "kind": "closeTo", "value": 91000, "tol": 1e-09 },
+    { "path": "capTotalWJK", "kind": "closeTo", "value": 185446.7, "tol": 1e-05 },
+    { "path": "basis", "kind": "flag", "value": "fluid+metal" },
+    { "path": "tauS", "kind": "closeTo", "value": 6.130468, "tol": 1e-05 },
+    { "path": "tauFluidOnlyS", "kind": "closeTo", "value": 3.1222, "tol": 1e-05 },
+    { "path": "tInfC", "kind": "closeTo", "value": 22.6446281, "tol": 1e-09 },
+    { "path": "samples[0].TC", "kind": "closeTo", "value": 22.15817, "tol": 1e-05 },
+    { "kind": "warningIncludes", "value": "同温集总假设" },
+    { "kind": "exitCode", "value": 0 }
+  ]
+}

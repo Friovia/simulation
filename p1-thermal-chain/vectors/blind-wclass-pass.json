@@ -1,0 +1,19 @@
+{
+  "id": "blind-wclass-pass",
+  "note": "ASHRAE W 级对标（given 模式查 TCS 供水，从严）：32°C ≤ W32 上限 32 且 ≥ 下限 2 → 通过。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": { "mode": "given", "tSupplyC": 32 },
+      "flows": [{ "id": "n1", "qLpm": 12 }],
+      "loads": [{ "id": "n1", "qW": 0 }],
+      "wClass": "W32"
+    }
+  },
+  "checks": [
+    { "path": "wClassPass", "kind": "flag", "value": true },
+    { "path": "wClassCheckC", "kind": "closeTo", "value": 32, "tol": 1e-12 },
+    { "path": "wClassMaxSupplyC", "kind": "closeTo", "value": 32, "tol": 1e-12 }
+  ]
+}

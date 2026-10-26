@@ -1,0 +1,19 @@
+{
+  "id": "blind-wclass-fail",
+  "note": "W 级不通过：32°C > W27 上限 27°C → wClassPass=false，converged 仍 true（合规发现）。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": { "mode": "given", "tSupplyC": 32 },
+      "flows": [{ "id": "n1", "qLpm": 12 }],
+      "loads": [{ "id": "n1", "qW": 0 }],
+      "wClass": "W27"
+    }
+  },
+  "checks": [
+    { "path": "wClassPass", "kind": "flag", "value": false },
+    { "path": "", "kind": "warningIncludes", "value": "W27" }
+  ],
+  "expectConverged": true
+}

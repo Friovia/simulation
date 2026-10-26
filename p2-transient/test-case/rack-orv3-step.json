@@ -1,0 +1,34 @@
+{
+  "schema": "p2/v0.1",
+  "meta": {
+    "客户 / RFQ": "演示工况（内部）——与 p0/p1 rack-orv3 同机柜",
+    "场景": "负载阶跃 40 kW → 80 kW（半载→满载），开环被动响应（控制回路红灯）",
+    "假设登记": [
+      "几何取自 P0 rack-orv3 工况（干管 50.8mm×3m×2 程 + 8×支管 19.1mm×2.5m×2 程）",
+      "冷板/CDU 内部容积未计（红灯：无公开源）——真实热容大于本模型",
+      "S_eff=30250 W/K = P1 slope 模式 CDU121 斜率",
+      "金属热容未计：τ 为下界，实际响应分钟级"
+    ]
+  },
+  "case": {
+    "fluid": "pg25",
+    "tMeanC": 35,
+    "pipes": [
+      { "id": "supply-return", "dMm": 50.8, "lenM": 3, "runs": 2 },
+      { "id": "branch-1", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+      { "id": "branch-2", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+      { "id": "branch-3", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+      { "id": "branch-4", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+      { "id": "branch-5", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+      { "id": "branch-6", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+      { "id": "branch-7", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+      { "id": "branch-8", "dMm": 19.1, "lenM": 2.5, "runs": 2 }
+    ],
+    "hxSlopeWKPerK": 30250,
+    "fwsSupplyC": 29,
+    "q0W": 40000,
+    "q1W": 80000,
+    "t0C": 30.3223,
+    "timesS": [0, 1, 3.12, 5, 10, 30, 60, 300]
+  }
+}

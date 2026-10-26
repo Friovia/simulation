@@ -1,0 +1,24 @@
+{
+  "id": "blind-tau-boundary",
+  "note": "边界与告警：初温 25 与 q0=40 kW 稳态 21.32°C 不符 → 告警但按给定初温积分；t=0 采样 T=初温精确；每条输出必带金属热容红灯告警（时间常数下界语义）。",
+  "input": {
+    "schema": "p2/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "tMeanC": 35,
+      "pipes": [{ "id": "loop", "dMm": 50.8, "lenM": 3, "runs": 2 }],
+      "hxSlopeWKPerK": 30250,
+      "fwsSupplyC": 20,
+      "q0W": 40000,
+      "q1W": 80000,
+      "t0C": 25,
+      "timesS": [0, 10]
+    }
+  },
+  "checks": [
+    { "path": "samples[0].TC", "kind": "closeTo", "value": 25, "tol": 1e-12 },
+    { "path": "", "kind": "warningIncludes", "value": "稳态" },
+    { "path": "", "kind": "warningIncludes", "value": "下界" }
+  ],
+  "expectConverged": true
+}

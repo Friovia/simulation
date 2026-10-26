@@ -1,0 +1,33 @@
+{
+  "id": "blind-selectivity-nsx-nm8n",
+  "note": "盲算（两级选择性保守判据）：上级 NSX DC TM-DC 3P/4P In=400、Ii 设定 2000 A（可调档 [1000,2000] 内）→ 带 [1600,2400] A。下级 NM8N-250 In=160 → Ii=10×160=1600 A → 带 [1280,1920] A。保守选择性极限=上级带下限 1600 A；fullSelectivity：1920 ≤ 1600 为 false（容差带重叠，非全选择性）。本级 Isc=1500 A ∈ [1280,1920] → uncertain（带内动作不定；1500 < 1600 上级不动）。Ir=1.0×160=160、负载 140 → overloadOk",
+  "input": {
+    "schema": "p3/v0.2",
+    "case": {
+      "nominalV": 48,
+      "currentA": 140,
+      "tC": 20,
+      "maxDropPct": 1,
+      "segs": [
+        { "id": "feeder", "material": "copper-iacs", "areaMm2": 800, "lenM": 2 }
+      ],
+      "trip": {
+        "loadA": 140,
+        "prospectiveIscA": 1500,
+        "device": { "deviceId": "nm8n-250-fixed", "inA": 160 },
+        "upstream": { "deviceId": "nsx-tmdc-3p4p-adjust", "inA": 400, "iiA": 2000 }
+      }
+    }
+  },
+  "checks": [
+    { "path": "trip.irA", "kind": "closeTo", "value": 160, "tol": 1e-09 },
+    { "path": "trip.iiA", "kind": "closeTo", "value": 1600, "tol": 1e-09 },
+    { "path": "trip.iiBand[0]", "kind": "closeTo", "value": 1280, "tol": 1e-09 },
+    { "path": "trip.instantaneous", "kind": "flag", "value": "uncertain" },
+    { "path": "trip.overloadOk", "kind": "flag", "value": true },
+    { "path": "trip.selectivity.conservativeLimitA", "kind": "closeTo", "value": 1600, "tol": 1e-09 },
+    { "path": "trip.selectivity.fullSelectivity", "kind": "flag", "value": false },
+    { "kind": "warningIncludes", "value": "非全选择性" },
+    { "kind": "exitCode", "value": 0 }
+  ]
+}

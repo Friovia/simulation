@@ -1,0 +1,19 @@
+{
+  "id": "blind-ua-zeroflow",
+  "note": "m2 回归锚点：ua 模式零流量带载——与 slope 对称的前置拦截（旧版 0/0→NaN 误报『物性表异常』，已修）。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": {
+        "mode": "hx",
+        "hx": { "mode": "ua", "uaWK": 3000, "arrangement": "counterflow", "source": "示例向量" },
+        "fws": { "supplyC": 20, "flowLpm": 43.1, "cpJkgK": 4180, "rhoKgM3": 1000, "note": "水（Incropera Table A.6 量级）" }
+      },
+      "flows": [{ "id": "n1", "qLpm": 0 }],
+      "loads": [{ "id": "n1", "qW": 6000 }]
+    }
+  },
+  "checks": [{ "path": "", "kind": "warningIncludes", "value": "零流量带载" }],
+  "expectConverged": false
+}

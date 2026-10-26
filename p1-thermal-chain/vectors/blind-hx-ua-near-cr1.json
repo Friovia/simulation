@@ -1,0 +1,27 @@
+{
+  "id": "blind-hx-ua-near-cr1",
+  "note": "盲算（C_r→1 连续性锚点，review m5）：UA=3000、Q=40 kW、T_f=10、FWS 43.1 L/min 水→C_f=3002.6333（C_max）。TCS 45 L/min：定点 T̄*=29.994→ρ=1027.803、cp=3890.0→C_tcs=2998.61（C_min）→C_r=0.998658→NTU=3000/2998.61=1.000465→ε=(1−e^−0.0013426)/(1−0.998658·e^−0.0013426)=0.50028→T_hot_in=10+40000/(0.50028×2998.61)=36.6642→T_s=36.6642−40000/2998.61=23.3247。逆流近 C_r=1 特征：T_s(23.3247) 与 T_fout(23.3216) 接近平行夹点。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": {
+        "mode": "hx",
+        "hx": { "mode": "ua", "uaWK": 3000, "arrangement": "counterflow", "source": "示例向量：UA 为假设值" },
+        "fws": { "supplyC": 10, "flowLpm": 43.1, "cpJkgK": 4180, "rhoKgM3": 1000, "note": "水（Incropera Table A.6 量级）" }
+      },
+      "flows": [{ "id": "n1", "qLpm": 45 }],
+      "loads": [{ "id": "n1", "qW": 40000 }]
+    }
+  },
+  "checks": [
+    { "path": "hx.cRatio", "kind": "closeTo", "value": 0.998658, "tol": 1e-5 },
+    { "path": "hx.eps", "kind": "closeTo", "value": 0.50028, "tol": 2e-4 },
+    { "path": "hx.tHotInC", "kind": "closeTo", "value": 36.66419, "tol": 2e-4 },
+    { "path": "tSupplyC", "kind": "closeTo", "value": 23.32466, "tol": 5e-4 },
+    { "path": "hx.tColdOutC", "kind": "closeTo", "value": 23.32164, "tol": 5e-5 },
+    { "path": "tReturnC", "kind": "equalsPath", "path2": "hx.tHotInC", "tol": 1e-9 },
+    { "path": "nodes[0].dTK", "kind": "equalsPath", "path2": "dtRackK", "tol": 1e-9 }
+  ],
+  "expectConverged": true
+}

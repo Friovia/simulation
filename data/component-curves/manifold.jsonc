@@ -1,0 +1,99 @@
+// ORv3 机柜 manifold（供液/回液集管）支路压降与流量分配
+// 数据政策：无源不入库、绝不编数；redlight = curve:null 占位欠账
+// 检索日期均为 2026-10-17。单位换算：1 psi = 6.89476 kPa。
+[
+  // ── 1. OCP ORv3 盲配 manifold 参考设计：供+回一对总管的 PQ 曲线 ──
+  {
+    "id": "manifold-orv3-bm-pair-pq",
+    "type": "manifold",
+    "vendor": "OCP 参考设计（Meta CLA 团队；Parker/nVent 参与编写）",
+    "model": "ORv3 Blind Mate Manifold reference design, Rev 1.0",
+    "fluid": { "basis": "PG25 @ 25°C" },
+    // 曲线为【供+回一对总管】整体压降，不含盲配快接头(BMQV)、机箱冷板环路(PCL)、
+    // 机柜软管、大手动快接头(LQC)。原始图内嵌表单位 psid，已换算 kPa：
+    //   L/min: 10   20    30    40    50     60     70     80
+    //   psid : 0.08 0.26  0.53  0.91  1.39   1.97   2.66   3.44
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [10, 0.55], [20, 1.79], [30, 3.65], [40, 6.27],
+        [50, 9.58], [60, 13.58], [70, 18.34], [80, 23.72]
+      ]
+    },
+    // 参考设计的结构/分配上下文（同一 spec）：
+    "geometry": {
+      "branch_positions": 12,            // §11.2.2：参考设计 24 只阀、每侧 12 只 → 12 个支路位（供+回成对）
+      "port_thread": "3/4-16 UNF-2B (ISO 11926-1)",  // §11.2.1，BMQC 接口
+      "rack_hose": "1 英寸软管 + LQC 入口，顶/底进液均测过，支路间分配性能相近（§13.1）",
+      "max_working_pressure": "50 psig",  // §16
+      "max_fluid_temp": "60°C",           // §17.2
+      "wetted_material": "SS 303/304/304L/316/316L"  // §18.2
+    },
+    "flow_distribution": {
+      // §13.1：不平衡度 = (max-min)/平均，按支路流量计
+      "recommended_max_pct": 5,     // CFD 均匀阻抗假设下的推荐值
+      "measured_pct": 10,           // 参考设计实测（含 BMQC 与支路阻抗真实差异）
+      "min_branch_dp": "1~2 psi (6.9~13.8 kPa)",  // §13.2：为均衡分配建议保证的最小支路压降（推荐量级）
+      "definition": "(Q_max - Q_min) / Q_avg，跨支路"
+    },
+    "source": {
+      "url": "https://www.opencompute.org/documents/open-rack-v3-blind-mate-manifold-specification-rev-1-0-review-april05-2024-pdf",
+      "type": "ocp-spec",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "数据点取自 spec Fig.19 图内嵌数据表（两次独立读图一致）；为一对总管整体值而非单根，且不含 BMQV/支路元件。工质基准系推断：图题只写 25°C 未点名工质，但 §17.1 载明所有流量性能测试用 Dowfrost LC25（25% PG），故按 PG25 @ 25°C 记——需人工向 OCP/作者确认图 19 工质。x≤40 L/min 段曲线较陡，插值误差相对更大。",
+    "redlight": null
+  },
+
+  // ── 2. 红灯：支路级（单支路）ΔP-流量实测曲线 ──
+  {
+    "id": "manifold-orv3-bm-branch-dp-curve",
+    "type": "manifold",
+    "vendor": "OCP 参考设计",
+    "model": "ORv3 Blind Mate Manifold（单支路）",
+    "fluid": { "basis": "PG25 @ 25°C" },
+    "curve": null,
+    "redlight": "缺单支路 ΔP-流量曲线。已查渠道：OCP ORv3 Blind Mate Manifold Spec Rev1.0 §13（只有 1~2 psi 最小支路压降推荐量级与 5%/10% 不平衡度，无支路曲线）；OCP Rack Manifold Requirements & Qualification v3 白皮书（定性准则，无曲线，https://www.opencompute.org/documents/ocp-white-paper-rack-manifold-requirements-and-qualification-v3-pdf）；groups.io ORV3 Blind Mate Interfaces r6 演示稿（无量）。替代用法：用条目 1 的总管对 PQ + §13.2 的 1~2 psi 支路最小压降 + 10% 不平衡度建分配模型，结果须标'未验证'。",
+    "source": {
+      "url": "https://www.opencompute.org/documents/open-rack-v3-blind-mate-manifold-specification-rev-1-0-review-april05-2024-pdf",
+      "type": "ocp-spec",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "无数据，占位条目"
+  },
+
+  // ── 3. 红灯：厂商在售 ORv3 manifold 产品的 ΔP-流量曲线（nVent / Parker / Vertiv）──
+  {
+    "id": "manifold-orv3-vendor-products",
+    "type": "manifold",
+    "vendor": "nVent / Parker / Vertiv",
+    "model": "nVent RackChiller 机柜集管；Parker ORV 系列；Vertiv CoolChip Fluid Network 机柜集管",
+    "fluid": { "basis": "PG25（Vertiv 指南明确 PG25 可接受；nVent/Parker 未公开工质基准）" },
+    "curve": null,
+    "redlight": "缺三家厂商 ORv3 manifold 产品的支路 ΔP-流量曲线与支路不平衡度。已查渠道：nVent RackChiller 产品页（仅几何：38x38mm 挤压不锈钢、ORB-6 螺纹、Parker NSP-06 快接头；无量，https://www.nvent.com/en-us/hoffman/products/rackchiller-rack-manifold-0）；Parker 数据中心冷却 ORV 页（403 无法抓全文，检索摘要仅'高流量低压降'定性，https://www.parker.com/tw/en/solutions/data-center-cooling/data-center-cooling-featured-product.html）；Vertiv In-Rack Manifold Guide Spec SL-71953（2024-10，仅定性：设计压力≥100 psi、介质 20~70°C、PG25 可用、干断式快接头，无 ΔP-流量曲线，https://www.vertiv.com/493c15/globalassets/shared/vertiv-in-rack-manifold-coolchip-1-phase-fluid-network-guide-specifications-sl-71953.pdf）。OCP 检索摘要提及 Parker 与 nVent 样机'流量不平衡与压降性能相近'，无量值。需向厂商索取 datasheet 或委托测试。",
+    "source": {
+      "url": "https://www.vertiv.com/493c15/globalassets/shared/vertiv-in-rack-manifold-coolchip-1-phase-fluid-network-guide-specifications-sl-71953.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "无数据，占位条目；三家均已查公开渠道"
+  },
+
+  // ── 4. 红灯：总管尺寸/流速设计基准的绝对曲线（LBNL 开放规范，ORv3 之前身）──
+  {
+    "id": "manifold-design-guideline-lbnl",
+    "type": "manifold",
+    "vendor": "LBNL（Open Specification for a Liquid Cooled Server Rack, 2018-06）",
+    "model": "通用液冷机柜集管设计准则（非 ORv3 专属）",
+    "fluid": { "basis": "未规定（设计准则，与工质无关的相对规则）" },
+    "curve": null,
+    "redlight": "缺机柜集管绝对 ΔP-流量曲线；LBNL 开放规范只给相对设计准则，无量化曲线。可用准则（已核对原文）：① 总管截面流速 < 1.0 m/s；② 最大流量下供+回总管压降 < 单个 IT 冷却环路压降的 1/40（保证各环路流量均匀）；③ 所有环路在设计流量下压降偏差 ≤ 10%，否则加平衡阀。这些是设计规则不是器件数据，仿真只能用作量级校核。",
+    "source": {
+      "url": "https://datacenters.lbl.gov/sites/default/files/OpenSpecification.pdf",
+      "type": "literature",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "占位条目；准则为 2018 年通用规范，早于 ORv3，仅作量级交叉校核"
+  }
+]

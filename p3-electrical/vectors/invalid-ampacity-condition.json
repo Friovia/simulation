@@ -1,0 +1,22 @@
+{
+  "id": "invalid-ampacity-condition",
+  "note": "域红旗：condition 'lfm900' 不在 awm-dc-40c-50k 条件集 {still|free} → 载流量校核跳过（ampacity 字段缺失）+ warning。converged 不受影响（合规发现语义）。另：规格 33×3 无匹配行（面积偏差>5%）也会走 no-match 路径，本向量只验条件分支",
+  "input": {
+    "schema": "p3/v0.2",
+    "case": {
+      "nominalV": 48,
+      "currentA": 1000,
+      "tC": 20,
+      "maxDropPct": 1,
+      "segs": [
+        { "id": "feeder", "material": "copper-iacs", "areaMm2": 800, "lenM": 2 }
+      ],
+      "ampacity": { "tableId": "awm-dc-40c-50k", "widthMm": 100, "thicknessMm": 10, "condition": "lfm900" }
+    }
+  },
+  "checks": [
+    { "path": "converged", "kind": "flag", "value": true },
+    { "kind": "warningIncludes", "value": "不在表" },
+    { "kind": "exitCode", "value": 0 }
+  ]
+}

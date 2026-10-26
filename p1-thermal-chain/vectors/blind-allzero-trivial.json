@@ -1,0 +1,27 @@
+{
+  "id": "blind-allzero-trivial",
+  "note": "m2 回归锚点：零负荷平凡解——Q=0 → ATD=0 → T_s=T_f，ΔT=0；流量带宽检查不参与（S 与物理无关）。旧版 ua 会 0/0→NaN 退 1，已修。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": {
+        "mode": "hx",
+        "hx": { "mode": "slope", "curveId": "hx-cdu121", "ratedTcsLpm": 120 },
+        "fws": { "supplyC": 29, "flowLpm": 100, "cpJkgK": 4180, "rhoKgM3": 1000, "note": "水（Incropera Table A.6 量级）" }
+      },
+      "flows": [{ "id": "n1", "qLpm": 12 }],
+      "loads": [{ "id": "n1", "qW": 0 }]
+    },
+    "curves": {
+      "hx-cdu121": { "x": "°C", "y": "kW", "points": [[0, 0], [2, 60.5], [4, 121], [6, 181.5]], "flowBasis": "二次侧额定 120 L/min" }
+    }
+  },
+  "checks": [
+    { "path": "tSupplyC", "kind": "closeTo", "value": 29, "tol": 1e-12 },
+    { "path": "tReturnC", "kind": "closeTo", "value": 29, "tol": 1e-12 },
+    { "path": "dtRackK", "kind": "closeTo", "value": 0, "tol": 1e-12 },
+    { "path": "hx.qKw", "kind": "closeTo", "value": 0, "tol": 1e-12 }
+  ],
+  "expectConverged": true
+}

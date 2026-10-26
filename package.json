@@ -1,0 +1,16 @@
+{
+  "name": "@liquid/simulation-workspace",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "vectors": "node p0-hydraulics/bin/p0.mjs vectors && node p1-thermal-chain/bin/p1.mjs vectors && node p2-transient/bin/p2.mjs vectors && node p3-electrical/bin/p3.mjs vectors"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.3"
+  }
+}

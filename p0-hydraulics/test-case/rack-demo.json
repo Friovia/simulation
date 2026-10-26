@@ -1,0 +1,27 @@
+{
+  "schema": "p0/v0.1",
+  "case": {
+    "tSupplyC": 32,
+    "tReturnC": 45,
+    "pump": { "curveId": "pump-cdu-demo", "yIs": "kPa" },
+    "supplyPipe": { "dMm": 50.8, "lenM": 3, "k": 3, "epsMm": 0.045 },
+    "branches": [
+      { "id": "node-1", "curveIds": ["manifold-seg-demo", "uqd06-pair-demo", "cp-node-demo"], "pipe": { "dMm": 19.1, "lenM": 2.5, "k": 2 }, "minLpm": 15 },
+      { "id": "node-2", "curveIds": ["manifold-seg-demo", "uqd06-pair-demo", "cp-node-demo"], "pipe": { "dMm": 19.1, "lenM": 2.5, "k": 2 }, "minLpm": 15 },
+      { "id": "node-3", "curveIds": ["manifold-seg-demo", "uqd06-pair-demo", "cp-node-demo"], "pipe": { "dMm": 19.1, "lenM": 2.5, "k": 2 }, "minLpm": 15 },
+      { "id": "node-4", "curveIds": ["manifold-seg-demo", "uqd06-pair-demo", "cp-node-demo"], "pipe": { "dMm": 19.1, "lenM": 2.5, "k": 2 }, "minLpm": 15 },
+      { "id": "node-5", "curveIds": ["manifold-seg-demo", "uqd06-pair-demo", "cp-node-demo"], "pipe": { "dMm": 19.1, "lenM": 2.5, "k": 2 }, "minLpm": 15 },
+      { "id": "node-6", "curveIds": ["manifold-seg-demo", "uqd06-pair-demo", "cp-node-demo"], "pipe": { "dMm": 19.1, "lenM": 2.5, "k": 2 }, "minLpm": 15 },
+      { "id": "node-7", "curveIds": ["manifold-seg-demo", "uqd06-pair-demo", "cp-node-demo"], "pipe": { "dMm": 19.1, "lenM": 2.5, "k": 2 }, "minLpm": 15 },
+      { "id": "node-8", "curveIds": ["manifold-seg-demo", "uqd06-pair-demo", "cp-node-demo"], "pipe": { "dMm": 19.1, "lenM": 2.5, "k": 2 }, "minLpm": 15 },
+      { "id": "node-9", "curveIds": ["manifold-seg-demo", "uqd06-pair-demo", "cp-node-demo"], "pipe": { "dMm": 19.1, "lenM": 2.5, "k": 2 }, "minLpm": 15 },
+      { "id": "node-10", "curveIds": ["manifold-seg-demo", "uqd06-pair-demo", "cp-node-demo"], "pipe": { "dMm": 19.1, "lenM": 2.5, "k": 2 }, "minLpm": 15 }
+    ]
+  },
+  "curves": {
+    "pump-cdu-demo": { "x": "L/min", "y": "kPa", "points": [[0, 300], [100, 285], [200, 245], [300, 180], [400, 90]], "basis": "占位演示曲线（清水），替换自曲线库" },
+    "manifold-seg-demo": { "x": "L/min", "y": "kPa", "points": [[0, 0], [10, 2], [20, 8], [30, 17], [40, 30]] },
+    "uqd06-pair-demo": { "x": "L/min", "y": "kPa", "points": [[0, 0], [10, 7], [20, 26], [30, 56], [40, 98]] },
+    "cp-node-demo": { "x": "L/min", "y": "kPa", "points": [[0, 0], [10, 4], [20, 14], [30, 30], [40, 52]] }
+  }
+}

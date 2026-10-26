@@ -1,0 +1,9 @@
+{
+  "name": "@liquid/p1-thermal-chain",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "P1 芯片→机房热阻链：θ 链 + ε-NTU 换热器 + 露点裕度 + ASHRAE W 级对标。纯函数库 input JSON → output JSON，零依赖",
+  "bin": { "p1": "bin/p1.mjs" },
+  "engines": { "node": ">=22" }
+}

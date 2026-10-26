@@ -1,0 +1,11 @@
+# 构建产物 / 生成物（可再生，不入库）
+node_modules/
+bench/wasm-poc/rs/target/
+p0-hydraulics/scripts/viz-snapshot.json
+p0-hydraulics/calc-note-demo/
+p1-thermal-chain/calc-note-chain/
+*.wasm
+
+# 系统
+Thumbs.db
+.DS_Store

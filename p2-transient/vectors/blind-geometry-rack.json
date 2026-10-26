@@ -1,0 +1,35 @@
+{
+  "id": "blind-geometry-rack",
+  "note": "盲算（rack-orv3 几何）：干管 50.8mm×3m×2 程=12.1610 L + 8×支管 19.1mm×2.5m×2 程=8×2.8652e-4×2.5×2=11.4609 L → 总 23.6219 L。ρ(35)=1025.2、cp(35)=3900 → m=24.217 kg、C=94447 J/K。S=30250 W/K（CDU121）→ τ=94447/30250=3.1234 s（流体侧下界——金属热容红灯，实际分钟级）。",
+  "input": {
+    "schema": "p2/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "tMeanC": 35,
+      "pipes": [
+        { "id": "supply-return", "dMm": 50.8, "lenM": 3, "runs": 2 },
+        { "id": "branch-1", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+        { "id": "branch-2", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+        { "id": "branch-3", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+        { "id": "branch-4", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+        { "id": "branch-5", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+        { "id": "branch-6", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+        { "id": "branch-7", "dMm": 19.1, "lenM": 2.5, "runs": 2 },
+        { "id": "branch-8", "dMm": 19.1, "lenM": 2.5, "runs": 2 }
+      ],
+      "hxSlopeWKPerK": 30250,
+      "fwsSupplyC": 20,
+      "q0W": 40000,
+      "q1W": 80000,
+      "t0C": 21.3223,
+      "timesS": [3.1234]
+    }
+  },
+  "checks": [
+    { "path": "volumeM3", "kind": "closeTo", "value": 0.0236219, "tol": 5e-4 },
+    { "path": "massKg", "kind": "closeTo", "value": 24.217, "tol": 5e-4 },
+    { "path": "capWJK", "kind": "closeTo", "value": 94447, "tol": 5e-4 },
+    { "path": "tauS", "kind": "closeTo", "value": 3.1234, "tol": 1e-3 },
+    { "path": "tInfC", "kind": "closeTo", "value": 22.6446, "tol": 1e-4 }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "name": "wasm-poc",
+  "private": true,
+  "type": "module"
+}

@@ -1,0 +1,124 @@
+{
+  "id": "blind-off1of3-filter",
+  "note": "盲算闭式解（独立于求解器实现，3 全同支路关 1+过滤器）：泵 A=180, B=0.15（(0,180),(200,150),(400,120)）；3 条全同支路 m=1.5（(0,0),(80,120),(160,240)），b 关断；filterDpKPa F=15。剩余 2 支路各 q、Q=2q，平衡 m·q+F=A−B·2q → q*=(A−F)/(m+2B)=(180−15)/(1.5+0.3)=165/1.8=91.666667 L/min；Q*=2q*=183.333333 L/min；P_pump=180−0.15·Q*=152.5 kPa（代数精确），支路侧恒等验算 1.5×91.6667+15=152.5 ✓。关断支路 q=0、sharePct=0，两条剩余支路严格相等各 50%。工作点严格域内：支路 91.667∈(0,160)、泵 183.333∈(0,400)。支路 dpKPa 是否含 F 口径歧义同 blind-filter，不检查该字段。已用自写插值+压力双层二分数值验算，差<1e-9。",
+  "input": {
+    "schema": "p0/v0.1",
+    "case": {
+      "tSupplyC": 30,
+      "tReturnC": 40,
+      "pump": {
+        "curveId": "pump-o",
+        "yIs": "kPa"
+      },
+      "branches": [
+        {
+          "id": "a",
+          "curveIds": [
+            "br-o"
+          ]
+        },
+        {
+          "id": "b",
+          "curveIds": [
+            "br-o"
+          ],
+          "shutdown": true
+        },
+        {
+          "id": "c",
+          "curveIds": [
+            "br-o"
+          ]
+        }
+      ],
+      "filterDpKPa": 15
+    },
+    "curves": {
+      "pump-o": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            180
+          ],
+          [
+            200,
+            150
+          ],
+          [
+            400,
+            120
+          ]
+        ]
+      },
+      "br-o": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            0
+          ],
+          [
+            80,
+            120
+          ],
+          [
+            160,
+            240
+          ]
+        ]
+      }
+    }
+  },
+  "checks": [
+    {
+      "path": "branches[0].qLpm",
+      "kind": "equalsPath",
+      "path2": "branches[2].qLpm",
+      "tol": 1e-9
+    },
+    {
+      "path": "branches[0].qLpm",
+      "kind": "closeTo",
+      "value": 91.66666666666667,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[1].qLpm",
+      "kind": "closeTo",
+      "value": 0,
+      "tol": 1e-9
+    },
+    {
+      "path": "branches[1].sharePct",
+      "kind": "closeTo",
+      "value": 0,
+      "tol": 1e-9
+    },
+    {
+      "path": "branches[0].sharePct",
+      "kind": "closeTo",
+      "value": 50,
+      "tol": 1e-9
+    },
+    {
+      "path": "qTotalLpm",
+      "kind": "closeTo",
+      "value": 183.33333333333334,
+      "tol": 0.000001
+    },
+    {
+      "path": "pumpDpKPa",
+      "kind": "closeTo",
+      "value": 152.5,
+      "tol": 0.000001
+    },
+    {
+      "path": "residual",
+      "kind": "lessThan",
+      "value": 1e-8
+    }
+  ]
+}

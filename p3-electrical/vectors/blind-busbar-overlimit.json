@@ -1,0 +1,20 @@
+{
+  "id": "blind-busbar-overlimit",
+  "note": "合规发现路径：压降率 0.179594% > 红线 0.1% → pass=false + 告警，但 converged=true（数字可信，方案另议）。",
+  "input": {
+    "schema": "p3/v0.1",
+    "case": {
+      "nominalV": 48,
+      "currentA": 1000,
+      "tC": 20,
+      "maxDropPct": 0.1,
+      "segs": [{ "id": "trunk-a", "material": "copper-iacs", "areaMm2": 800, "lenM": 2 }]
+    }
+  },
+  "checks": [
+    { "path": "pass", "kind": "flag", "value": false },
+    { "path": "", "kind": "warningIncludes", "value": "红线" },
+    { "path": "", "kind": "exitCode", "value": 0 }
+  ],
+  "expectConverged": true
+}

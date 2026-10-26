@@ -1,0 +1,782 @@
+// 器件曲线库 —— CDU 循环泵 P-Q 曲线（in-rack / in-row / 独立式液冷 CDU）
+// 检索日期统一 2026-10-17。数据政策见同目录 schema.md：无源不入库、绝不编数。
+//
+// 【本文件总欠账（红灯汇总）】
+//  - NPSH：全部厂商均未在公开 datasheet 中给出 CDU 循环泵 NPSH（查过 Vertiv SL-71348/SL-71252/
+//    SL-80061/SL-80095、nVent Spec-01468、Motivair 2026 brochure、Boyd 手册）→ 全线欠账。
+//  - 变频范围（Hz）：仅 Vertiv CoolChip CDU 2300 手册给出（最小转速 25%，转速=60 Hz 满速百分比，
+//    即约 15–60 Hz）；其余厂商只写"变速/VSD"，无范围 → 各条 uncertainty 已注明。
+//  - 完整 P-Q 曲线（多点原始数值）：无一家公开数字表。Boyd/nVent CDU40 的 P-Q 图为图片且
+//    CDU40 图无法数字化（见红灯条目）。所有入库曲线均为"datasheet 锚点 + 同类形状插值"。
+//
+// 【曲线构造方法（政策第 2 条，适用于每条 curve）】
+//  - 各条目仅 1 个锚点（datasheet 原值，点旁注 A），其余点为插值（注 I）：
+//    H(Q) = H0 − k·Q²，H0 = 1.25 × H_anchor（离心泵典型关断扬程/额定点比），k 由过锚点解出。
+//    形状借自同类离心泵（二次下降抛物线），绝对值有据、形状为工程近似 → 不确定度约 ±15%，
+//    仿真结果参与处应标"形状未验证"。
+//  - y 轴统一为 kPa【可用压升】= CDU 二次侧对外提供的压差（external/available pressure），
+//    非泵本体全扬程。换算参考：1 bar = 100 kPa ≈ 10.2 m 水柱 @20°C。
+//  - 锚点单位换算：1 gpm(US) = 3.785 L/min；1 psi = 6.894 kPa（Motivair 表原值 gpm/psi）。
+//
+// 【PG25 工质修正（政策第 5 条）】
+//  - 厂商曲线基准：Vertiv=水或PG-25@20°C（datasheet 声明）；nVent=处理水（≤30%PG）；
+//    Motivair=100% 水（手册脚注 1）。清水基准条目不得直接用于 PG25 仿真，须用 *-pg25 条目。
+//  - 修正方法：扬程 m 视为工质无关（离心泵运动相似）；ΔP 按密度比放大：
+//    ρ(PG25,25°C)/ρ(水,20°C) = 1.024/0.998 = 1.026
+//    （密度来源 https://www.engineeringtoolbox.com/propylene-glycol-d_361.html ，
+//    25% PG @25°C 比重 1.024）。PG25@25°C 运动黏度 ~3 cSt，按行业惯例黏度扬程修正 <2%，忽略。
+[
+  // ── Vertiv CoolChip CDU 600（in-row/周边，600 kW L2L）──────────────────────
+  {
+    "id": "pump-vertiv-coolchip600-single",
+    "type": "pump",
+    "vendor": "Vertiv",
+    "model": "CoolChip CDU 600（单泵运行）",
+    "fluid": { "basis": "水或 PG-25 @ 20°C（datasheet: Water or PG-25 with inhibitors；流量值标定于 20°C）" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      // A=datasheet 锚点(450 l/m @ 2.25 bar @20°C, SL-80061)；I=抛物线插值
+      "points": [[0, 281], [150, 275], [300, 256], [450, 225], [600, 181], [750, 125], [900, 56]]
+    },
+    "source": {
+      "url": "https://www.vertiv.com/4a71b0/globalassets/shared/vertiv-coolchip-cdu-600-data-sheet-sl-80061.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "仅 1 个 datasheet 锚点（450 L/min @ 2.25 bar=225 kPa），其余点为同类离心泵形状插值（政策第 2 条：形状借自同类，绝对值有据）；未见误差带；单点不确定度约 ±15%",
+    "redlight": null,
+    "notes": "双泵冗余（单泵额定点功率 4.5 kW/双泵 9.0 kW）；同表另有双泵点 900 L/min @ 1.3 bar（见下条）；NPSH 未公开；变频范围未公开"
+  },
+  {
+    "id": "pump-vertiv-coolchip600-dual",
+    "type": "pump",
+    "vendor": "Vertiv",
+    "model": "CoolChip CDU 600（双泵并联运行）",
+    "fluid": { "basis": "水或 PG-25 @ 20°C" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      // A=900 l/m @ 1.3 bar（双泵最大流量点，SL-80061）
+      "points": [[0, 163], [300, 159], [600, 148], [900, 130], [1200, 105], [1500, 72]]
+    },
+    "source": {
+      "url": "https://www.vertiv.com/4a71b0/globalassets/shared/vertiv-coolchip-cdu-600-data-sheet-sl-80061.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "锚点为双泵并联包络点（900 L/min @ 1.3 bar），非单泵曲线；并联 2× 同型泵曲线的准确合成需单泵全曲线，此处形状借自同类抛物线，±15% 以上，仿真慎用",
+    "redlight": null,
+    "notes": "并联=2 泵同时运行（冗余配置 2 台）；双泵同时工作时对外最大 900 L/min @ 1.3 bar"
+  },
+
+  // ── Vertiv CoolChip CDU 100kW（in-rack，L2L，单机柜）───────────────────────
+  {
+    "id": "pump-vertiv-coolchip100kw-inrack",
+    "type": "pump",
+    "vendor": "Vertiv",
+    "model": "CoolChip CDU 100kW（in-rack）",
+    "fluid": { "basis": "水或 PG-25（datasheet: Water or PG-25 with inhibitors）" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      // A=额定点 120 l/min @ 1.15 bar（SL-71348）
+      "points": [[0, 144], [40, 141], [80, 131], [120, 115], [160, 93], [200, 64]]
+    },
+    "source": {
+      "url": "https://www.vertiv.com/49c795/globalassets/products/thermal-management/high-density-solutions/vertiv-coolchip-cdu/vertiv-coolchip-cdu-100kw-data-sheet-sl-71348.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "单锚点（120 L/min @ 1.15 bar=115 kPa 额定）+ 同类形状插值（政策第 2 条）；±15%",
+    "redlight": null,
+    "notes": "121 kW @ 4°C ATD；压差控制的二次侧回路；泵冗余/N+1 未在 datasheet 标明（欠账）；NPSH 未公开"
+  },
+  {
+    "id": "pump-vertiv-coolchip100kw-inrack-pg25",
+    "type": "pump",
+    "vendor": "Vertiv",
+    "model": "CoolChip CDU 100kW（in-rack，PG25 修正条目）",
+    "fluid": { "basis": "PG25 @ 25°C（由水/PG25@20°C 基准按密度比修正；2026-10-20 评审统一 SG=1.0334=1030.3/997.0，原 1.026 批次已回改）" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [[0, 149.0675], [40, 146.0458], [80, 134.9665], [120, 118.8511], [160, 95.6852], [200, 66.476]]
+    },
+    "source": {
+      "url": "https://www.vertiv.com/49c795/globalassets/products/thermal-management/high-density-solutions/vertiv-coolchip-cdu/vertiv-coolchip-cdu-100kw-data-sheet-sl-71348.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "由 pump-vertiv-coolchip100kw-inrack 按 SG=1.0334 修正（2026-10-20 统一）（密度源 https://www.engineeringtoolbox.com/propylene-glycol-d_361.html ）；黏度扬程修正 <2% 忽略；叠加形状插值误差，总 ±15%+",
+    "redlight": null,
+    "notes": "政策第 5 条：仿真跑 PG25 时用本条，不用水基准条目"
+  },
+
+  // ── Vertiv CoolChip CDU 2300（独立式，2.3 MW L2L）──────────────────────────
+  {
+    "id": "pump-vertiv-coolchip2300-dual",
+    "type": "pump",
+    "vendor": "Vertiv",
+    "model": "CoolChip CDU 2300（双泵运行）",
+    "fluid": { "basis": "PG-25 或去离子水（I&C 手册 GL 英文版 Rev 06/25）" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      // A=最大流量 3400 lpm @ 3.2 bar 外部压降（双泵，SL-80095）
+      "points": [[0, 400], [1200, 390], [2400, 360], [3400, 320], [4250, 275], [5100, 220]]
+    },
+    "source": {
+      "url": "https://www.vertiv.com/49ec93/globalassets/shared/vertiv-coolchip-cdu2300_installation-commissioning-and-maintenance_gl-english_sl-80095_rev0625.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "单锚点（3400 L/min @ 3.2 bar=320 kPa，双泵最大流量@外部压降）+ 同类形状插值；±15%",
+    "redlight": null,
+    "notes": "泵配置 2 台（可配第 3 台）；VFD：最小转速 25%，转速为 60 Hz 满速的百分比 → 约 15–60 Hz（本库唯一有据变频范围）；压差（DP）控制模式 P201；NPSH 未公开"
+  },
+
+  // ── nVent RackChiller CDU800（in-row，800 kW L2L）─────────────────────────
+  {
+    "id": "pump-nvent-cdu800-single",
+    "type": "pump",
+    "vendor": "nVent",
+    "model": "RackChiller CDU800（单泵运行）",
+    "fluid": { "basis": "处理水（≤30% PG；规格书未标曲线工质温度，按清水基准对待）" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      // A=单泵最大 1100 LPM @ 2.6 bar（Spec-01468）
+      "points": [[0, 325], [400, 316], [800, 291], [1100, 260], [1400, 220], [1700, 170]]
+    },
+    "source": {
+      "url": "https://www.nvent.com/sites/default/files/acquiadam/assets/Spec-01468_0.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "单锚点（1100 L/min @ 2.6 bar=260 kPa）+ 同类形状插值（政策第 2 条）；工质基准不明确（处理水/30%PG），用于 PG25 前需修正（见政策第 5 条，本型号未立 PG25 条目=欠账）；±15%",
+    "redlight": null,
+    "notes": "双泵冗余（integrated VSDs，范围未公开）；NPSH 未公开"
+  },
+  {
+    "id": "pump-nvent-cdu800-dual",
+    "type": "pump",
+    "vendor": "nVent",
+    "model": "RackChiller CDU800（双泵并联运行）",
+    "fluid": { "basis": "处理水（≤30% PG）" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      // A=双泵最大 1100 LPM @ 3.4 bar（Spec-01468；与单泵同流量、更高压升）
+      "points": [[0, 425], [400, 414], [800, 380], [1100, 340], [1400, 287], [1700, 222]]
+    },
+    "source": {
+      "url": "https://www.nvent.com/sites/default/files/acquiadam/assets/Spec-01468_0.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "锚点为双泵同流量高扬程点（1100 L/min @ 3.4 bar），形状借自同类；双泵并联时两规格点（2.6/3.4 bar @ 同流量）说明并联侧重增压实为冗余备用而非倍增流量，仿真并联模型须按此校核；±15%",
+    "redlight": null,
+    "notes": "泵系统：双泵冗余+集成 VSD；NPSH 未公开"
+  },
+
+  // ── Motivair（Schneider Electric）MCDU 系列（独立式/in-rack）──────────────
+  // 原表（2026 手册，100% 水基准）：MCDU-4U 20gpm@15psi | -10 40gpm@15psi | -25 120gpm@37psi
+  //   | -40 240gpm@32psi | -45 308gpm@29psi | -50 340gpm@40psi | -55 431gpm@51psi | -70 991gpm@38psi
+  {
+    "id": "pump-motivair-mcdu25",
+    "type": "pump",
+    "vendor": "Motivair (Schneider Electric)",
+    "model": "MCDU-25（625 kW，in-row/独立）",
+    "fluid": { "basis": "100% 水（手册脚注：Capacities are rated with 100% Water）" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      // A=额定点 120 gpm(454 L/min) @ 37 psi(255 kPa)
+      "points": [[0, 319], [200, 307], [400, 269], [454, 255], [600, 208], [750, 145]]
+    },
+    "source": {
+      "url": "https://www.motivaircorp.com/uploads/files/brochures/CDU%202026%20Motivair%20by%20SE.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "单锚点（Nominal Available Pump Head 37 psi @ secondary 120 gpm）+ 同类形状插值（政策第 2 条）；100% 水基准，跑 PG25 须用下方 -pg25 条目；±15%",
+    "redlight": null,
+    "notes": "冗余泵（Redundant pumps，方案未细化：N+1 或 1+1 未标明=欠账）；NPSH 未公开；变频范围未公开"
+  },
+  {
+    "id": "pump-motivair-mcdu25-pg25",
+    "type": "pump",
+    "vendor": "Motivair (Schneider Electric)",
+    "model": "MCDU-25（PG25 修正条目）",
+    "fluid": { "basis": "PG25 @ 25°C（由 100% 水基准按密度比修正；2026-10-20 评审统一 SG=1.0334=1030.3/997.0，原 1.026 批次已回改）" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [[0, 329.3585], [200, 317.272], [400, 277.9907], [454, 263.8897], [600, 214.5363], [750, 150.0747]]
+    },
+    "source": {
+      "url": "https://www.motivaircorp.com/uploads/files/brochures/CDU%202026%20Motivair%20by%20SE.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "由 pump-motivair-mcdu25 按 SG=1.0334 修正（2026-10-20 统一）（ρ 源 https://www.engineeringtoolbox.com/propylene-glycol-d_361.html ，PG25@25°C SG=1.024 vs 水@20°C 0.998）；黏度修正 <2% 忽略；总 ±15%+",
+    "redlight": null,
+    "notes": "政策第 5 条 PG25 仿真用条目"
+  },
+  {
+    "id": "pump-motivair-mcdu40",
+    "type": "pump",
+    "vendor": "Motivair (Schneider Electric)",
+    "model": "MCDU-40（1.2 MW，in-row/独立）",
+    "fluid": { "basis": "100% 水（手册脚注 1）" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      // A=额定点 240 gpm(908 L/min) @ 32 psi(221 kPa)
+      "points": [[0, 276], [300, 270], [600, 252], [908, 221], [1200, 180], [1500, 125]]
+    },
+    "source": {
+      "url": "https://www.motivaircorp.com/uploads/files/brochures/CDU%202026%20Motivair%20by%20SE.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "单锚点（32 psi @ 240 gpm）+ 同类形状插值（政策第 2 条）；100% 水基准；如需 PG25 按同法 ×1.026 另立（未立=欠账）；±15%",
+    "redlight": null,
+    "notes": "冗余泵；NPSH/变频范围未公开"
+  },
+
+  // ── 红灯占位（curve: null，进欠账表）───────────────────────────────────────
+  {
+    "id": "pump-envicool-rack-llu-cdu",
+    "type": "pump",
+    "vendor": "英维克 Envicool",
+    "model": "机架式液液 CDU（EnviroCool/XCDU 系列，15/30/80 kW）",
+    "fluid": { "basis": "未知" },
+    "curve": null,
+    "source": {
+      "url": "https://www.envicool.com/productinfo70.html",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "官网产品页参数表全部为图片/下载件，无公开数值",
+    "redlight": "缺 P-Q 曲线及任何泵流量/扬程数值（含 NPSH、变频 Hz、并联细节除 1+1 外均缺）。查过渠道：envicool.com 官网产品页 productinfo70.html（机架式液液）、productinfo543.html（机柜式）、productinfo595.html（风液）、官网新闻页、Intel 合作 slides（仅检索摘要）。仅确认：水泵/电源 1+1 冗余，流量 10%~100% 可调（变频）。需向厂商索取规格书"
+  },
+  {
+    "id": "pump-boyd-inrack-cdu",
+    "type": "pump",
+    "vendor": "Boyd",
+    "model": "In-Rack CDU 2U/4U（及 In-Row CDU、10U L2A）",
+    "fluid": { "basis": "纯水（In-Rack 规格：Coolant Pure water；10U：Water/EGW/PGW，额定点 PG25）" },
+    "curve": null,
+    "source": {
+      "url": "https://info.boydcorp.com/hubfs/Thermal/Liquid-Cooling/Boyd-Coolant-Distribution-Units.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "手册中的 Secondary Loop Hydraulic P-Q Curve 经核图为上升阻力曲线（CDU 内阻 ΔP，10~80 lpm 约 2~115 kPa，三种内构件配置），并非泵扬程特性（泵曲线应为下降线），不可当泵曲线入库",
+    "redlight": "缺泵扬程数值曲线（Nominal available pump head 栏只写 See Graph，图为图片无数字表）。已知：In-Rack 二次侧流量 5–75 LPM（纯水）；In-Row 额定 360 L/min、2 泵冗余、每泵独立 VFD、泵电机 5.5 HP；10U L2A（Mouser 版）回路流量上限 70 LPM、系统最大压力 500 kPa、泵 N+1、32 kW@60 LPM PG25。查过渠道：Boyd 官方手册（info.boydcorp.com PDF，含曲线图数字化尝试）、Mouser 10U datasheet。需向 Boyd 索取泵曲线数据表"
+  },
+  {
+    // 2026-10-20 转正（红灯解除）：Cloudfront 官方镜像 Spec-01466A 取回原图，像素轨迹法数字化（方法与误差见 uncertainty）。
+    // 政策修订登记：矢量渲染 PDF 的曲线可数字化入库——须 tick 反验标定 + 量化读图误差 + 锚点交叉验证三件套，uncertainty 逐条注明。
+    "id": "pump-nvent-cdu40",
+    "type": "pump",
+    "vendor": "nVent",
+    "model": "RackChiller CDU40（in-rack 4U，40 kW）Secondary P-Q Default Pump Mode",
+    "fluid": { "basis": "纯水（规格书 P-Q 图标注 water）" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [[0, 235.3], [5, 217.4], [10, 198.4], [15, 179.6], [20, 160.7], [25, 142.0], [30, 123.4], [35, 104.7], [40, 86.0], [45, 67.4], [50, 48.8], [55, 30.4]]
+    },
+    "source": {
+      "url": "https://d14aeh40s5zf9b.cloudfront.net/userfiles/productdocuments/HOFFCDU0402R001Q/SPEC_56278578_SpecificationSheet.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-20"
+    },
+    "uncertainty": "数字化条目（digitized）：Spec-01466A 第 3 页 Secondary P-Q Curve (Water, Dual-Clamp) Default Pump Mode（金色线）300dpi 矢量渲染像素轨迹提取，轴标定 x: 0LPM@px578/80LPM@px2079、y: 0psi@px1176/45psi@px386，8 个主刻度 tick 反验全对齐（±1 LPM）。综合读图误差 ±1 psi（±3%）/±1 LPM；shut-off 34.1 psi=235.3 kPa。锚点交叉验证：Max 线 60 LPM 处提取 6.2 psi vs 规格文字『dual pumps: 60 LPM at 0.5 bar (7 psi)』差 0.8 psi（读图误差内）。⚠️ 20 psi bypass opens（图例虚线）：Default 曲线 <26 LPM 段可用压差 >20 psi(138 kPa) 时旁通阀开启调制实际压差，本曲线为泵本体能力——P0 求解落在该段时结果偏乐观，输出须核对压差域。x 域止于 55 LPM（曲线绘制终点）；3 泵配置 75 LPM 不在本图。原 nvent.com 直链（Hoffman-SLSH-CDU40-USEN-2111.pdf）仍 403，原图以 Cloudfront 官方 CDN 镜像为准",
+    "redlight": null
+  },
+  {
+    "id": "pump-nvent-cdu40-max",
+    "type": "pump",
+    "vendor": "nVent",
+    "model": "RackChiller CDU40（in-rack 4U，40 kW）Secondary P-Q Maximum Pump Performance",
+    "fluid": { "basis": "纯水（规格书 P-Q 图标注 water）" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [[0, 240.4], [5, 224.3], [10, 207.2], [15, 190.2], [20, 173.4], [25, 156.6], [30, 140.2], [35, 123.7], [40, 107.2], [45, 90.9], [50, 74.8], [55, 58.9], [60, 43.0]]
+    },
+    "source": {
+      "url": "https://d14aeh40s5zf9b.cloudfront.net/userfiles/productdocuments/HOFFCDU0402R001Q/SPEC_56278578_SpecificationSheet.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-20"
+    },
+    "uncertainty": "数字化条目（digitized）：同 pump-nvent-cdu40（红色线，Maximum Pump Performance Mode；颜色-标签对应经三重证据确认：像素轨迹压头/流量域更高更宽 + 物理常识 + 60 LPM@6.2 psi 对规格锚点 7 psi）。读图误差同上 ±1 psi/±1 LPM；bypass 20 psi 限制在 <33 LPM 段同样适用；x 域止于 60 LPM。功耗口径：default mode 670 W / max performance 970 W（spec 文字）",
+    "redlight": null
+  },
+  {
+    "id": "pump-vertiv-coolchip70",
+    "type": "pump",
+    "vendor": "Vertiv",
+    "model": "CoolChip CDU 70（70 kW L2A）",
+    "fluid": { "basis": "水或 PG-25（datasheet）" },
+    "curve": null,
+    "source": {
+      "url": "https://www.vertiv.com/4a4963/globalassets/shared/vertiv-coolchip-cdu-70-data-sheet-sl-71252.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "datasheet 仅给额定流量，无扬程/压升，不足以按政策第 2 条构造曲线（缺压升锚点）",
+    "redlight": "缺扬程/压升数据。已知：额定流体流量 70 l/min (18.5 gpm)；单泵最大功率 1.92 kW（最大流量与外部压降工况）；风扇/泵冗余热插拔。查过渠道：Vertiv 官方 SL-71252 datasheet 全文。需 datasheet 升级版或 application guide"
+  },
+  {
+    "id": "pump-nvent-chx-200",
+    "type": "pump",
+    "vendor": "nVent",
+    "model": "RackChiller CHx CDU（in-rack 4U，200 kW L2L）",
+    "fluid": { "basis": "二次侧 25% PG（PG25）；一次侧水" },
+    "curve": null,
+    "source": {
+      "url": "https://www.nvent.com/sites/default/files/acquiadam_assets/2021-04/SCHROFF-SLSH-H85115-RackChillerCHxCDU-EN.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "规格书只给流量与压力上限阀值，无泵扬程",
+    "redlight": "缺 P-Q 曲线/扬程。已知：二次侧最大流量 150 LPM（双泵开启，对应 200 kW）；工质 PG25；泵 n+1（2 泵每 24 h 轮换）；二次侧最大工作压力 40 psi（diverter valve），过压阀 50 psi；最大功耗 2400 W。查过渠道：nVent 官方规格表（2021-11 版）。注意：若后续取到扬程，此为现成 PG25 基准器件"
+  },
+  {
+    "id": "pump-vertiv-coolchip600-single-pg25",
+    "type": "pump",
+    "vendor": "Vertiv",
+    "model": "CoolChip CDU 600（单泵运行）",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，ΔP∝ρ）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          0,
+          290.3855
+        ],
+        [
+          150,
+          284.1851
+        ],
+        [
+          300,
+          264.5505
+        ],
+        [
+          450,
+          232.515
+        ],
+        [
+          600,
+          187.0454
+        ],
+        [
+          750,
+          129.175
+        ],
+        [
+          900,
+          57.8704
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://www.vertiv.com/4a71b0/globalassets/shared/vertiv-coolchip-cdu-600-data-sheet-sl-80061.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "仅 1 个 datasheet 锚点（450 L/min @ 2.25 bar=225 kPa），其余点为同类离心泵形状插值（政策第 2 条：形状借自同类，绝对值有据）；未见误差带；单点不确定度约 ±15%；PG25 修正：密度项按 SG@25°C 精确（原标定温度下比值变化 <0.4%），黏度项（湍流区 ~2-3%）未计入；厂商口径『水或 PG-25』双适用：修正量级 ~3% 在曲线 ±15% 内，保守起见两条并存",
+    "redlight": null,
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "pump-vertiv-coolchip600-dual-pg25",
+    "type": "pump",
+    "vendor": "Vertiv",
+    "model": "CoolChip CDU 600（双泵并联运行）",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，ΔP∝ρ）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          0,
+          168.4442
+        ],
+        [
+          300,
+          164.3106
+        ],
+        [
+          600,
+          152.9432
+        ],
+        [
+          900,
+          134.342
+        ],
+        [
+          1200,
+          108.507
+        ],
+        [
+          1500,
+          74.4048
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://www.vertiv.com/4a71b0/globalassets/shared/vertiv-coolchip-cdu-600-data-sheet-sl-80061.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "锚点为双泵并联包络点（900 L/min @ 1.3 bar），非单泵曲线；并联 2× 同型泵曲线的准确合成需单泵全曲线，此处形状借自同类抛物线，±15% 以上，仿真慎用；PG25 修正：密度项按 SG@25°C 精确（原标定温度下比值变化 <0.4%），黏度项（湍流区 ~2-3%）未计入；同 single 条目口径",
+    "redlight": null,
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "pump-vertiv-coolchip2300-dual-pg25",
+    "type": "pump",
+    "vendor": "Vertiv",
+    "model": "CoolChip CDU 2300（双泵运行）",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，ΔP∝ρ）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          0,
+          413.3601
+        ],
+        [
+          1200,
+          403.0261
+        ],
+        [
+          2400,
+          372.0241
+        ],
+        [
+          3400,
+          330.6881
+        ],
+        [
+          4250,
+          284.1851
+        ],
+        [
+          5100,
+          227.348
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://www.vertiv.com/49ec93/globalassets/shared/vertiv-coolchip-cdu2300_installation-commissioning-and-maintenance_gl-english_sl-80095_rev0625.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "单锚点（3400 L/min @ 3.2 bar=320 kPa，双泵最大流量@外部压降）+ 同类形状插值；±15%；PG25 修正：密度项按 SG@25°C 精确（原标定温度下比值变化 <0.4%），黏度项（湍流区 ~2-3%）未计入；厂商口径『PG-25 或去离子水』：修正量级 ~3% 在曲线不确定度内，两条并存",
+    "redlight": null,
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "pump-nvent-cdu800-single-pg25",
+    "type": "pump",
+    "vendor": "nVent",
+    "model": "RackChiller CDU800（单泵运行）",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，ΔP∝ρ）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          0,
+          335.8551
+        ],
+        [
+          400,
+          326.5545
+        ],
+        [
+          800,
+          300.7195
+        ],
+        [
+          1100,
+          268.6841
+        ],
+        [
+          1400,
+          227.348
+        ],
+        [
+          1700,
+          175.678
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://www.nvent.com/sites/default/files/acquiadam/assets/Spec-01468_0.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "单锚点（1100 L/min @ 2.6 bar=260 kPa）+ 同类形状插值（政策第 2 条）；工质基准不明确（处理水/30%PG），用于 PG25 前需修正（见政策第 5 条，本型号未立 PG25 条目=欠账）；±15%；PG25 修正：密度项按 SG@25°C 精确（原标定温度下比值变化 <0.4%），黏度项（湍流区 ~2-3%）未计入",
+    "redlight": null,
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "pump-nvent-cdu800-dual-pg25",
+    "type": "pump",
+    "vendor": "nVent",
+    "model": "RackChiller CDU800（双泵并联运行）",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，ΔP∝ρ）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          0,
+          439.1951
+        ],
+        [
+          400,
+          427.8277
+        ],
+        [
+          800,
+          392.6921
+        ],
+        [
+          1100,
+          351.3561
+        ],
+        [
+          1400,
+          296.5859
+        ],
+        [
+          1700,
+          229.4148
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://www.nvent.com/sites/default/files/acquiadam/assets/Spec-01468_0.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "锚点为双泵同流量高扬程点（1100 L/min @ 3.4 bar），形状借自同类；双泵并联时两规格点（2.6/3.4 bar @ 同流量）说明并联侧重增压实为冗余备用而非倍增流量，仿真并联模型须按此校核；±15%；PG25 修正：密度项按 SG@25°C 精确（原标定温度下比值变化 <0.4%），黏度项（湍流区 ~2-3%）未计入",
+    "redlight": null,
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "pump-motivair-mcdu40-pg25",
+    "type": "pump",
+    "vendor": "Motivair (Schneider Electric)",
+    "model": "MCDU-40（1.2 MW，in-row/独立）",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，ΔP∝ρ）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          0,
+          285.2185
+        ],
+        [
+          300,
+          279.0181
+        ],
+        [
+          600,
+          260.4169
+        ],
+        [
+          908,
+          228.3814
+        ],
+        [
+          1200,
+          186.012
+        ],
+        [
+          1500,
+          129.175
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://www.motivaircorp.com/uploads/files/brochures/CDU%202026%20Motivair%20by%20SE.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "单锚点（32 psi @ 240 gpm）+ 同类形状插值（政策第 2 条）；100% 水基准；如需 PG25 按同法 ×1.026 另立（未立=欠账）；±15%；PG25 修正：密度项按 SG@25°C 精确（原标定温度下比值变化 <0.4%），黏度项（湍流区 ~2-3%）未计入",
+    "redlight": null,
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "pump-nvent-cdu40-pg25",
+    "type": "pump",
+    "vendor": "nVent",
+    "model": "RackChiller CDU40（in-rack 4U，40 kW）Secondary P-Q Default Pump Mode",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，ΔP∝ρ）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          0,
+          243.1591
+        ],
+        [
+          5,
+          224.6612
+        ],
+        [
+          10,
+          205.0266
+        ],
+        [
+          15,
+          185.5987
+        ],
+        [
+          20,
+          166.0674
+        ],
+        [
+          25,
+          146.7428
+        ],
+        [
+          30,
+          127.5216
+        ],
+        [
+          35,
+          108.197
+        ],
+        [
+          40,
+          88.8724
+        ],
+        [
+          45,
+          69.6512
+        ],
+        [
+          50,
+          50.4299
+        ],
+        [
+          55,
+          31.4154
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://d14aeh40s5zf9b.cloudfront.net/userfiles/productdocuments/HOFFCDU0402R001Q/SPEC_56278578_SpecificationSheet.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-20"
+    },
+    "uncertainty": "数字化条目（digitized）：Spec-01466A 第 3 页 Secondary P-Q Curve (Water, Dual-Clamp) Default Pump Mode（金色线）300dpi 矢量渲染像素轨迹提取，轴标定 x: 0LPM@px578/80LPM@px2079、y: 0psi@px1176/45psi@px386，8 个主刻度 tick 反验全对齐（±1 LPM）。综合读图误差 ±1 psi（±3%）/±1 LPM；shut-off 34.1 psi=235.3 kPa。锚点交叉验证：Max 线 60 LPM 处提取 6.2 psi vs 规格文字『dual pumps: 60 LPM at 0.5 bar (7 psi)』差 0.8 psi（读图误差内）。⚠️ 20 psi bypass opens（图例虚线）：Default 曲线 <26 LPM 段可用压差 >20 psi(138 kPa) 时旁通阀开启调制实际压差，本曲线为泵本体能力——P0 求解落在该段时结果偏乐观，输出须核对压差域。x 域止于 55 LPM（曲线绘制终点）；3 泵配置 75 LPM 不在本图。原 nvent.com 直链（Hoffman-SLSH-CDU40-USEN-2111.pdf）仍 403，原图以 Cloudfront 官方 CDN 镜像为准；PG25 修正：密度项按 SG@25°C 精确（原标定温度下比值变化 <0.4%），黏度项（湍流区 ~2-3%）未计入",
+    "redlight": null,
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "pump-nvent-cdu40-max-pg25",
+    "type": "pump",
+    "vendor": "nVent",
+    "model": "RackChiller CDU40（in-rack 4U，40 kW）Secondary P-Q Maximum Pump Performance",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，ΔP∝ρ）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          0,
+          248.4294
+        ],
+        [
+          5,
+          231.7917
+        ],
+        [
+          10,
+          214.1205
+        ],
+        [
+          15,
+          196.5527
+        ],
+        [
+          20,
+          179.1916
+        ],
+        [
+          25,
+          161.8305
+        ],
+        [
+          30,
+          144.8827
+        ],
+        [
+          35,
+          127.8316
+        ],
+        [
+          40,
+          110.7805
+        ],
+        [
+          45,
+          93.9361
+        ],
+        [
+          50,
+          77.2983
+        ],
+        [
+          55,
+          60.8673
+        ],
+        [
+          60,
+          44.4362
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://d14aeh40s5zf9b.cloudfront.net/userfiles/productdocuments/HOFFCDU0402R001Q/SPEC_56278578_SpecificationSheet.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-20"
+    },
+    "uncertainty": "数字化条目（digitized）：同 pump-nvent-cdu40（红色线，Maximum Pump Performance Mode；颜色-标签对应经三重证据确认：像素轨迹压头/流量域更高更宽 + 物理常识 + 60 LPM@6.2 psi 对规格锚点 7 psi）。读图误差同上 ±1 psi/±1 LPM；bypass 20 psi 限制在 <33 LPM 段同样适用；x 域止于 60 LPM。功耗口径：default mode 670 W / max performance 970 W（spec 文字）；PG25 修正：密度项按 SG@25°C 精确（原标定温度下比值变化 <0.4%），黏度项（湍流区 ~2-3%）未计入",
+    "redlight": null,
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  }
+]

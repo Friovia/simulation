@@ -1,0 +1,92 @@
+{
+  "id": "blind-min-margin",
+  "note": "盲算闭式解（min 保证流量低例，独立于求解器实现）：与 blind-single 同构曲线，泵 A=200, B=0.4、支路 m=1.6 → q*=A/(B+m)=200/2=100 L/min（代数精确），P*=160 kPa。minLpm=110>q* → minMarginLpm=q*−minLpm=100−110=−10（负裕度）；流量低于 min 保证属承诺告警（不属钳位/残差问题），期望仍 converged=true、residual<1e-8，且 warnings 含『低于 min 保证』。工作点严格域内。已用自写插值+压力双层二分数值验算，差<1e-9。",
+  "input": {
+    "schema": "p0/v0.1",
+    "case": {
+      "tSupplyC": 30,
+      "tReturnC": 40,
+      "pump": {
+        "curveId": "pump1",
+        "yIs": "kPa"
+      },
+      "branches": [
+        {
+          "id": "only",
+          "curveIds": [
+            "br1"
+          ],
+          "minLpm": 110
+        }
+      ]
+    },
+    "curves": {
+      "pump1": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            200
+          ],
+          [
+            125,
+            150
+          ],
+          [
+            250,
+            100
+          ]
+        ]
+      },
+      "br1": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            0
+          ],
+          [
+            75,
+            120
+          ],
+          [
+            150,
+            240
+          ]
+        ]
+      }
+    }
+  },
+  "checks": [
+    {
+      "path": "qTotalLpm",
+      "kind": "closeTo",
+      "value": 100,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].qLpm",
+      "kind": "closeTo",
+      "value": 100,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].minMarginLpm",
+      "kind": "closeTo",
+      "value": -10,
+      "tol": 0.000001
+    },
+    {
+      "path": "qTotalLpm",
+      "kind": "warningIncludes",
+      "value": "低于 min 保证"
+    },
+    {
+      "path": "residual",
+      "kind": "lessThan",
+      "value": 1e-8
+    }
+  ]
+}

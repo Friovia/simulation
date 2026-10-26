@@ -1,0 +1,96 @@
+{
+  "schema": "p1/v0.1",
+  "dataVersion": "component-curves@2026-10-20-hx78",
+  "meta": {
+    "客户 / RFQ": "演示工况（内部）——与 p0-hydraulics/test-case/rack-orv3.json 同机柜",
+    "机柜配置": "ORv3 风格 · 8× 8-OAM 液冷节点 · in-rack CDU 100 kW（CoolChip CDU121 换热器）",
+    "房间条件": "热带 35°C / 60%RH（露点 ≈26.08°C，红线裕量 ≥1.5 K）",
+    "负载": "8× 10 kW（每节点 8 OAM × 1.25 kW）",
+    "水力工况": "flows 取自 P0 solve rack-orv3.json（98.87 L/min，每节点 12.358 L/min）",
+    "假设登记": [
+      "θ=0.02185 K/W = Wiwynn 8-OAM 每板 case-to-inlet 0.019（上界）×1.15 PG25 恶化（cold-plate.jsonc Wiwynn 条目 notes）",
+      "tCaseMaxC=80 为占位值，正式报价前须换服务器厂商规格",
+      "FWS 物性水 4180 J/kgK/1000 kg/m³（Incropera Table A.6 量级）",
+      "HX 斜率 30.25 kW/K 仅额定 120 L/min 有据；实际 98.9 L/min 偏离 17.6%，登记带宽 ±10% 告警内"
+    ]
+  },
+  "case": {
+    "fluid": "pg25",
+    "supplySource": {
+      "mode": "hx",
+      "hx": {
+        "mode": "slope",
+        "curveId": "hx-vertiv-coolchip-cdu121",
+        "ratedTcsLpm": 120,
+        "note": "flowBasis 人工转写：数据表『二次侧额定 120 L/min, 1.15 bar』"
+      },
+      "fws": {
+        "supplyC": 29,
+        "flowLpm": 100,
+        "cpJkgK": 4180,
+        "rhoKgM3": 1000,
+        "note": "设施水 29°C（W32 冷却塔+经济器口径），物性 Incropera Table A.6 量级"
+      }
+    },
+    "flows": [
+      { "id": "node-1", "qLpm": 12.358205909770932 },
+      { "id": "node-2", "qLpm": 12.358205909770932 },
+      { "id": "node-3", "qLpm": 12.358205909770932 },
+      { "id": "node-4", "qLpm": 12.358205909770932 },
+      { "id": "node-5", "qLpm": 12.358205909770932 },
+      { "id": "node-6", "qLpm": 12.358205909770932 },
+      { "id": "node-7", "qLpm": 12.358205909770932 },
+      { "id": "node-8", "qLpm": 12.358205909770932 }
+    ],
+    "loads": [
+      { "id": "node-1", "qW": 10000, "hotSpot": { "qW": 1250, "thetaKPerW": 0.02185, "thetaRef": "inlet", "tCaseMaxC": 80, "thetaFlowLpmRange": [1.5, 3.5], "thetaFlowSplitN": 8, "note": "Wiwynn 每板 0.019 上界 ×1.15 PG25" } },
+      { "id": "node-2", "qW": 10000, "hotSpot": { "qW": 1250, "thetaKPerW": 0.02185, "thetaRef": "inlet", "tCaseMaxC": 80, "thetaFlowLpmRange": [1.5, 3.5], "thetaFlowSplitN": 8, "note": "同 node-1" } },
+      { "id": "node-3", "qW": 10000, "hotSpot": { "qW": 1250, "thetaKPerW": 0.02185, "thetaRef": "inlet", "tCaseMaxC": 80, "thetaFlowLpmRange": [1.5, 3.5], "thetaFlowSplitN": 8, "note": "同 node-1" } },
+      { "id": "node-4", "qW": 10000, "hotSpot": { "qW": 1250, "thetaKPerW": 0.02185, "thetaRef": "inlet", "tCaseMaxC": 80, "thetaFlowLpmRange": [1.5, 3.5], "thetaFlowSplitN": 8, "note": "同 node-1" } },
+      { "id": "node-5", "qW": 10000, "hotSpot": { "qW": 1250, "thetaKPerW": 0.02185, "thetaRef": "inlet", "tCaseMaxC": 80, "thetaFlowLpmRange": [1.5, 3.5], "thetaFlowSplitN": 8, "note": "同 node-1" } },
+      { "id": "node-6", "qW": 10000, "hotSpot": { "qW": 1250, "thetaKPerW": 0.02185, "thetaRef": "inlet", "tCaseMaxC": 80, "thetaFlowLpmRange": [1.5, 3.5], "thetaFlowSplitN": 8, "note": "同 node-1" } },
+      { "id": "node-7", "qW": 10000, "hotSpot": { "qW": 1250, "thetaKPerW": 0.02185, "thetaRef": "inlet", "tCaseMaxC": 80, "thetaFlowLpmRange": [1.5, 3.5], "thetaFlowSplitN": 8, "note": "同 node-1" } },
+      { "id": "node-8", "qW": 10000, "hotSpot": { "qW": 1250, "thetaKPerW": 0.02185, "thetaRef": "inlet", "tCaseMaxC": 80, "thetaFlowLpmRange": [1.5, 3.5], "thetaFlowSplitN": 8, "note": "同 node-1" } }
+    ],
+    "room": { "tAirC": 35, "rhPct": 60, "minDewMarginK": 1.5 },
+    "wClass": "W32"
+  },
+  "curves": {
+    "hx-vertiv-coolchip-cdu121": {
+      "x": "°C", "y": "kW",
+      "points": [[0, 0], [2, 60.5], [4, 121], [6, 181.5]],
+      "flowBasis": "二次侧额定 120 L/min, 1.15 bar",
+      "basis": "二次侧 Water 或 PG-25 with inhibitors（数据表双口径未区分额定条件）",
+      "provenance": {
+        "url": "https://www.vertiv.com/49c795/globalassets/products/thermal-management/high-density-solutions/vertiv-coolchip-cdu/vertiv-coolchip-cdu-100kw-data-sheet-sl-71348.pdf",
+        "type": "datasheet",
+        "retrieved": "2026-10-17",
+        "uncertainty": "官方数据表仅单点额定 121 kW @ 4°C ATD；斜率 30.25 kW/K=121/4，非锚点为 ε-NTU 线性外推；一次侧流量未给，UA 无法反演"
+      }
+    },
+    "hx-nvent-rackchiller-cdu40": {
+      "x": "°C", "y": "kW",
+      "points": [[0, 0], [5, 20], [10, 40], [15, 60]],
+      "flowBasis": "额定一次侧 64 LPM（max 80）/ 二次侧 60 LPM(双泵)·75 LPM(三泵)",
+      "basis": "两侧均为 treated water with up to 25% PG（官方 spec 明示）",
+      "provenance": {
+        "url": "https://d14aeh40s5zf9b.cloudfront.net/userfiles/productdocuments/HOFFCDU0402R001Q/SPEC_56278578_SpecificationSheet.pdf",
+        "type": "datasheet",
+        "retrieved": "2026-10-20",
+        "uncertainty": "官方 spec sheet Spec-01466A（Cloudfront 官方 CDN 镜像）：40 kW at 10 C Approach (64 LPM Primary)；斜率 4.0 kW/K，非锚点为 ε-NTU 线性外推；min approach 5K 对应容量未公布"
+      }
+    },
+    "hx-envicool-xcrow080": {
+      "x": "°C", "y": "kW",
+      "points": [[0, 0], [2.5, 40], [5, 80], [7.5, 120]],
+      "flowBasis": "二次侧（PG25）额定 99 LPM；一次侧流量未公布",
+      "basis": "二次侧 SoluKing PG25；一次侧软化水（官方规格表明示）",
+      "provenance": {
+        "url": "https://en.envicool.com/upload/file/20250402/1743565940169841.pdf",
+        "type": "datasheet",
+        "retrieved": "2026-10-20",
+        "uncertainty": "官方英文 PDF 规格表：Heat Exchange Capacity 80 kW；ATD=5K 为推导值（40−35°C 供液口径）非厂商原文，斜率可信度低于厂商直标 ATD 条目；斜率 16 kW/K，非锚点为 ε-NTU 线性外推"
+      }
+    }
+  }
+}

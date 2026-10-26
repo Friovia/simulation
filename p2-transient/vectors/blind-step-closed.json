@@ -1,0 +1,28 @@
+{
+  "id": "blind-step-closed",
+  "note": "盲算（一阶闭式）：目标 C=100000 J/K。ρ(40)=1022.5 kg/m³、cp(40)=3920 J/kgK（Dow LC25 表）→ 需总容积 100000/(1022.5×3920)=24.9489 L；管段 50.8mm×3m×2 程=12.1610 L → extraVolumeL=12.7879 L。S=1000 W/K → τ=100 s。Q: 0→40 kW，T_f=20 → T_inf=60°C，初温 20（=q0 稳态）。T(t)=60+(20−60)e^(−t/100)：T(0)=20；T(100)=60−40e^−1=45.2848；T(300)=60−40e^−3=58.0085。",
+  "input": {
+    "schema": "p2/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "tMeanC": 40,
+      "pipes": [{ "id": "loop", "dMm": 50.8, "lenM": 3, "runs": 2 }],
+      "extraVolumeL": 12.7879,
+      "extraVolumeNote": "向量构造容积（凑 C=100000 J/K 的登记假设，非器件数据）",
+      "hxSlopeWKPerK": 1000,
+      "fwsSupplyC": 20,
+      "q0W": 0,
+      "q1W": 40000,
+      "t0C": 20,
+      "timesS": [0, 100, 300]
+    }
+  },
+  "checks": [
+    { "path": "capWJK", "kind": "closeTo", "value": 100000, "tol": 1e-4 },
+    { "path": "tauS", "kind": "closeTo", "value": 100, "tol": 1e-4 },
+    { "path": "tInfC", "kind": "closeTo", "value": 60, "tol": 1e-9 },
+    { "path": "samples[0].TC", "kind": "closeTo", "value": 20, "tol": 1e-9 },
+    { "path": "samples[1].TC", "kind": "closeTo", "value": 45.2848, "tol": 1e-4 },
+    { "path": "samples[2].TC", "kind": "closeTo", "value": 58.0085, "tol": 1e-4 }
+  ]
+}

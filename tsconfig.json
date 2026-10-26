@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "target": "esnext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "skipLibCheck": true,
+    "noUncheckedIndexedAccess": true,
+    "types": ["node"]
+  },
+  "include": [
+    "p0-hydraulics/src",
+    "p1-thermal-chain/src",
+    "p2-transient/src",
+    "p3-electrical/src",
+    "p0-hydraulics/scripts",
+    "p1-thermal-chain/src/vectors.ts"
+  ],
+  "exclude": ["**/node_modules"]
+}

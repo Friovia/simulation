@@ -1,0 +1,435 @@
+// 器件族：主流液冷服务器冷板组（NVIDIA HGX H100/H200、GB200 NVL72、OCP OAM）
+// 数据政策见 schema.md：无源不入库、绝不编数；单点数据按政策#2借同类形状插值
+// （微通道冷板充分发展湍流区 ΔP∝Q^~1.5-2，本文件统一按注明的方式插值）。
+// 热阻 θ 数据仅记于 notes，主要供 P1 热链用，不参与水力曲线。
+// 检索日期统一 retrieved: 2026-10-17
+[
+  // ── OCP OAI 规格系（8-OAM / H100 级加速模块冷板组）──────────────────────────
+  {
+    // OAI《System Liquid Cooling Guidelines》(2023-03, Meta/Microsoft/Intel/Wiwynn/Boyd 等)
+    // §6.1 Boyd 案例：4x2 布局 8-OAM PCL 整链（QD-to-QD，含分液 manifold + 8 冷板并联）
+    "id": "coldplate-oai-8oam-4x2-pcl-pg25",
+    "type": "cold-plate",
+    "vendor": "OCP OAI (Boyd 案例)",
+    "model": "8-OAM PCL 4x2 (QD-to-QD 整链)",
+    "fluid": { "basis": "PG25（25% 丙二醇水溶液）" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      // 锚点：10.0 L/min @ 10 psi(=68.9 kPa)（原文固定流量扫点）。其余点按 ΔP=k·Q² 插值
+      "points": [[6, 24.8], [8, 44.1], [10, 68.9], [12, 99.2], [14, 135.7]]
+    },
+    "source": {
+      "url": "https://www.opencompute.org/documents/oai-system-liquid-cooling-guidelines-in-ocp-template-mar-3-2023-update-pdf",
+      "type": "ocp-spec",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "OCP 白皮书案例数据（原型 PCL，非量产 datasheet）；额定单点锚定（10 L/min, 68.9 kPa），其余点形状借自同类（湍流二次律），绝对值有据",
+    "redlight": null,
+    "notes": "需水量口径：OAI 指南 §1.3 给出每 OAM 冷板典型 1-2 L/min、机箱级 8 OAM 4-16 L/min；PG25 设计准则 1.25-2.0 L/min/kW（对应温升 7.5-12°C）。PCL 整链含 manifold+快插，冷板本体 ΔP 占比约 50%（另见 Wiwynn 案例）。θ 数据（主要供 P1 热链用）：CoolerMaster 1kW OAM TTV θ<0.02 °C/W @ PG25 2-5 L/min。系统背景：OCP ACS 冷板需求文档（https://www.opencompute.org/documents/ocp-acs-liquid-cooling-cold-plate-requirements-pdf）给出 TCS 回路工作压力典型 140-450 kPa、冷板带走热量占比 70-75%。"
+  },
+  {
+    // 同文档 §6.1：8x1 布局。有两个真实锚点：(10 L/min, 7 psi=48.3 kPa) 与 (12.5 L/min, 10 psi=68.9 kPa)
+    "id": "coldplate-oai-8oam-8x1-pcl-pg25",
+    "type": "cold-plate",
+    "vendor": "OCP OAI (Boyd 案例)",
+    "model": "8-OAM PCL 8x1 (QD-to-QD 整链)",
+    "fluid": { "basis": "PG25（25% 丙二醇水溶液）" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      // 两锚点间幂律指数 n=1.56（由两锚点反解），区间外外推
+      "points": [[6, 21.8], [8, 33.9], [10, 48.3], [12.5, 68.9], [14, 82.7]]
+    },
+    "source": {
+      "url": "https://www.opencompute.org/documents/oai-system-liquid-cooling-guidelines-in-ocp-template-mar-3-2023-update-pdf",
+      "type": "ocp-spec",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "OCP 白皮书案例数据；两个真实锚点（10 L/min@48.3 kPa、12.5 L/min@68.9 kPa）间幂律 n=1.56 内插，锚点外形状借自同类，绝对值有据",
+    "redlight": null,
+    "notes": "8x1 布局阻力低于 4x2（同 10 psi 下流量 12.5 vs 10.0 L/min）。需水量/θ 参见 4x2 条目 notes。"
+  },
+  {
+    // 同文档 §6.3：Wiwynn 4x2 8-OAM TTV 系统验证（DI 水基准，与 PG25 条目分开立）
+    "id": "coldplate-oai-wiwynn-8oam-4x2-ttv-diw",
+    "type": "cold-plate",
+    "vendor": "Wiwynn (OAI 指南 §6.3 案例)",
+    "model": "8-OAM 4x2 TTV (QD-to-QD 整链)",
+    "fluid": { "basis": "DI water @ 30°C" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      // 锚点：8 L/min @ 17 psi(=117.2 kPa)。其余点按 ΔP=k·Q² 插值
+      "points": [[6, 65.9], [8, 117.2], [10, 183.1]]
+    },
+    "source": {
+      "url": "https://www.opencompute.org/documents/oai-system-liquid-cooling-guidelines-in-ocp-template-mar-3-2023-update-pdf",
+      "type": "ocp-spec",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "OCP 白皮书案例数据；额定单点锚定（8 L/min, 117.2 kPa）+ 二次律形状插值，绝对值有据。注意：工质为 DI 水 30°C，按政策#5 不得直接用于 PG25 仿真，需按黏度修正后另立条目",
+    "redlight": null,
+    "notes": "原文：系统流量 8 L/min（2.0 L/min per cold plate，与 8 板并联的算术关系原文未说清，需人工复核）、QD-to-QD 总压降 17 psi；ΔP 构成约 50% 来自冷板、50% 来自软管+manifold+快插。θ（主要供 P1 热链用）：case-to-inlet 0.014-0.019 °C/W/板 @ 每板 1.5-3.5 L/min DI 水；换 PG25 热阻最多恶化 15%。"
+  },
+
+  // ── NVIDIA HGX H200 8-GPU 冷板组（厂商参考设计口径）───────────────────────
+  {
+    "id": "coldplate-hgx-h200-8gpu-tonecooling-38c",
+    "type": "cold-plate",
+    "vendor": "ToneCooling",
+    "model": "HGX H200 8-GPU + NVSwitch 冷板组（参考设计，整组并联）",
+    "fluid": { "basis": "纯水 @ 38°C 入口（参考设计条件）" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      // 锚点：8.0 L/min @ ~18.5 kPa（整组）。其余点按 ΔP=k·Q² 插值
+      "points": [[4, 4.6], [6, 10.4], [8, 18.5], [10, 28.9]]
+    },
+    "source": {
+      "url": "https://tonecooling.com/data-center-cold-plates/h200-gpu-cold-plate",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "厂商参考设计单点（8 L/min, 18.5 kPa）+ 二次律形状插值，形状借自同类，绝对值有据；纯水基准，PG25 使用需按政策#5 修正另立条目",
+    "redlight": null,
+    "notes": "需水量口径：整组（8×700W GPU + 2×134W + 2×156W NVSwitch ≈ 6.18 kW）共 8.0 L/min，折合每 GPU 约 1 L/min。承压能力 0.8 MPa；板面温度 <65°C（参考条件）。θ（主要供 P1 热链用）：该厂商另一口径给 system θ<0.0055 °C/W（见下一条）。"
+  },
+  {
+    "id": "coldplate-hgx-h200-8gpu-tonecooling-tx-45c",
+    "type": "cold-plate",
+    "vendor": "ToneCooling Texas",
+    "model": "NVIDIA H200 GPU + NVSwitch 液冷组装（8 GPU + 4 NVSwitch）",
+    "fluid": { "basis": "纯水 @ 45°C 入口" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      // 锚点：推荐 10 L/min @ max 40 kPa（上限值，实际额定 ΔP 可能更低）。按 ΔP=k·Q² 插值
+      "points": [[6, 14.4], [8, 25.6], [10, 40.0], [12, 57.6]]
+    },
+    "source": {
+      "url": "https://www.tonecoolingtexas.com/nvidia-h200-liquid-cold-plate-usa/",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "厂商页单点（10 L/min 推荐，40 kPa 为 max 压降上限而非实测额定）+ 二次律形状插值，形状借自同类，绝对值有据且偏保守（按上限锚定）；纯水基准，PG25 使用需按政策#5 修正",
+    "redlight": null,
+    "notes": "需水量口径：整组 6.344 kW（700W×8 GPU + 186W×4 NVSwitch）推荐 10 L/min，折合每 GPU 1.25 L/min。θ（主要供 P1 热链用）：system θ<0.0055 °C/W @ 10 L/min 45°C 水。与上一条同厂商不同口径（热负荷/入口温度不同），仿真取值需人工选定。"
+  },
+
+  // ── NVIDIA GB200 (NVL72 superchip) 冷板组 ─────────────────────────────────
+  {
+    "id": "coldplate-gb200-superchip-tonecooling-kit",
+    "type": "cold-plate",
+    "vendor": "ToneCooling",
+    "model": "TC-BZP-GB200-01A（GB200 模块冷板套件：2×1200W GPU + 300W CPU，共 2700W）",
+    "fluid": { "basis": "纯水 @ 25±2°C（datasheet 测试条件）" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      // 锚点：2.5 L/min @ 35±5 kPa。其余点按 ΔP=k·Q² 插值
+      "points": [[1.5, 12.6], [2.0, 22.4], [2.5, 35.0], [3.0, 50.4]]
+    },
+    "source": {
+      "url": "https://tonecooling.com/nvidia-gb200-nvl72-cooling-requirements",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "厂商 datasheet 单点（2.5 L/min, 35±5 kPa）+ 二次律形状插值，形状借自同类，绝对值有据；纯水基准，PG25 使用需按政策#5 修正另立条目",
+    "redlight": null,
+    "notes": "需水量口径：每 GB200 模块（一托盘 2 模块）2.5 L/min。承压 0.6 MPa；测试条件板面 <43°C；设计要求入口 30-45°C（1200W 时）。NVL72 整机架流量该页未给（提示找集成商确认）。θ：该厂商不公布固定值（按项目 TDP/入口/TIM 定）。NVIDIA 官方口径见红灯条目。"
+  },
+  {
+    "id": "coldplate-gb200-superchip-fibermall",
+    "type": "cold-plate",
+    "vendor": "FiberMall",
+    "model": "GB200 液冷板（2×Blackwell GPU + Grace CPU，TDP 2700W）",
+    "fluid": { "basis": "PG25 @ 45°C 入口" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      // 锚点：1.8 L/min @ <20 kPa（上限值）。按 ΔP=k·Q² 插值
+      "points": [[1.0, 6.2], [1.4, 12.1], [1.8, 20.0], [2.2, 29.9]]
+    },
+    "source": {
+      "url": "https://www.fibermall.com/blog/nvidia-gb200-liquid-cooling-plate.htm",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "厂商技术博客单点（1.8 L/min，<20 kPa 为上限而非实测曲线）+ 二次律形状插值，形状借自同类，绝对值有据且偏保守；PG25 基准可直接用于 PG25 仿真",
+    "redlight": null,
+    "notes": "需水量口径：每 GB200 模块 1.8 L/min（PG25，45°C 入口）——与 ToneCooling 2.5 L/min/模块 纯水口径并存，仿真选型需人工复核。热流密度 >50 W/cm²、局部 150 W/cm²；接口 CEJN/CPC UQD04。θ（主要供 P1 热链用）：<0.03 °C/W @ 1.8 L/min PG25。"
+  },
+
+  // ── 第三方 SXM 级单 GPU 冷板（覆盖 H100/H200 SXM5）──────────────────────
+  {
+    "id": "coldplate-sxm-hopper-ats-aic1012",
+    "type": "cold-plate",
+    "vendor": "ATS (Advanced Thermal Solutions) / ArctiQ NEXA",
+    "model": "ATS-AIC-1012（单 SXM 模块冷板，H100/H200/A100 SXM，5.5 kW）",
+    "fluid": { "basis": "未注明——厂商页未给工质与温度条件（疑清水）。按政策#5 禁止直接使用，需按 PG25 黏度修正后另立条目" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      // 厂商实测表（6 点，非插值）
+      "points": [[1.0, 0.51], [2.0, 1.87], [3.0, 4.08], [4.0, 7.08], [5.0, 10.8], [6.0, 15.26]]
+    },
+    "source": {
+      "url": "https://www.qats.com/Products/Liquid-Cooling/AI-Chip-Coolers/ATS-AIC-1012",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "本库唯一多点实测表（厂商页面），但工质/温度未注明且数值偏低（6 L/min 仅 15.26 kPa，疑为低阻大流道设计或清水低黏度基准）；绝对值可用性待人工复核，PG25 场景必须修正后使用",
+    "redlight": null,
+    "notes": "第三方可选冷板（非 NVIDIA 原配），用于 H100/H200 SXM5 仿真敏感性分析。θ（主要供 P1 热链用）：0.007-0.010 °C/W（页面 features 标 0.009 @6 LPM，表格高流量区 0.007，两处不一致）。"
+  },
+
+  // ── 红灯欠账（curve: null，绝不编数）──────────────────────────────────────
+  {
+    "id": "redlight-nvl72-rack-total-flow-nvidia-official",
+    "type": "cold-plate",
+    "vendor": "NVIDIA",
+    "model": "GB200 NVL72 整机架冷板组总需水量（官方口径）",
+    "fluid": { "basis": "（缺）NVIDIA 官方口径通常为 PG25，但公开文档未给流量数" },
+    "curve": null,
+    "source": {
+      "url": "https://docs.nvidia.com/dgx/dgxgb200-user-guide/dgxgb200-user-guide.pdf",
+      "type": "literature",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "NVIDIA 公开文档（DGX GB200 User Guide 2025-08 版）已全文核查：只给 18 计算托盘/约 120 kW 构型，无任何流量/ΔP 数字",
+    "redlight": "缺 GB200 NVL72 机架级冷板组总需水量与 ΔP 限值的 NVIDIA 官方数字。查过渠道：DGX GB200 User Guide（docs.nvidia.com，无流量数）；HPE QuickSpecs a50009224enw（JS 渲染墙，未能核到正文）；Supermicro GB200 NVL72 datasheet（只给 CDU 容量 250 kW，无流量）；第三方博客数字互相矛盾（Introl 称 80 L/min 单源；Alliance Chemical 170-195 L/min 系按 1.5 L/min/kW 规则推算非实测）。替代口径：OAI 指南 PG25 设计准则 1.25-2.0 L/min/kW 可用于估算，但非 NVIDIA 官方。",
+    "notes": "追源建议：向 NVIDIA/OEM 索取受限的 NVL72 Deployment Guide / TDG，或取自家交付柜 commissioning 遥测（measured 类型）。"
+  },
+  {
+    "id": "redlight-min-flow-throttle-threshold",
+    "type": "cold-plate",
+    "vendor": "NVIDIA",
+    "model": "HGX H100/H200 与 GB200 NVL72 最小流量保护阈值（低于即降频）",
+    "fluid": { "basis": "（缺）" },
+    "curve": null,
+    "source": {
+      "url": "https://docs.nvidia.com/dgx-superpod/design-guides/dgx-superpod-data-center-design-h100/latest/cooling.html",
+      "type": "literature",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "全部公开渠道只有定性描述（'偏离散热规格可触发自动降频，性能最多降 60%'），无任何 L/min 阈值数字",
+    "redlight": "缺 H100/H200/NVL72 冷板最小流量（触发降频保护）数值。查过渠道：NVIDIA DGX SuperPOD H100 Data Center Design Guide cooling 章节（仅风冷内容）；DGX GB200 User Guide（无）；DCGM 公开文档线索（有流量/漏液监控字段但无阈值）；Lianli/Introl/ToneCooling 部署文章（均只复述'会降频 60%'）。阈值在 NVIDIA 受限 deployment guide 与各 OEM BMC 策略内。",
+    "notes": "对仿真影响：最小流量约束目前只能按额定流量的经验比例（如 50-70%）假设，输出需标注'未验证'。"
+  },
+  {
+    "id": "redlight-supermicro-dlc-per-source-flow",
+    "type": "cold-plate",
+    "vendor": "Supermicro",
+    "model": "DLC 系统每热源冷板流量（HGX H100/H200 8-GPU 主流整机厂口径）",
+    "fluid": { "basis": "（缺，其文档口径为 PG25）" },
+    "curve": null,
+    "source": {
+      "url": "https://www.supermicro.com/en/assets/FAQ_DLC_FAQ.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "该 PDF 历史上公开过每热源推荐流量（搜索摘要素引显示 GPU 2.0 L/min、CPU 1.5 L/min 字样），但本次所有抓取路径均未核到原文，按铁律不入库",
+    "redlight": "缺 Supermicro DLC 每热源（GPU/CPU 冷板）流量与系统 ΔP 数值的可核实原文。查过渠道：supermicro.com FAQ_DLC_FAQ.pdf（Cloudflare 拦截，返回 HTML）；supermicro.org.cn 镜像（同）；liquid-cooling FAQ 页面（已 404）；Wayback Machine（无可用快照/超时）；Google 快照（仅 AI 摘要，非原文）。",
+    "notes": "追源建议：浏览器带 cookie 手动下载该 PDF 后补录；或改用 Gigabyte/Aivres 等 8-GPU DLC 整机公开手册。"
+  },
+  {
+    "id": "coldplate-oai-wiwynn-8oam-4x2-ttv-diw-pg25",
+    "type": "cold-plate",
+    "vendor": "Wiwynn (OAI 指南 §6.3 案例)",
+    "model": "8-OAM 4x2 TTV (QD-to-QD 整链)",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，ΔP∝ρ）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          6,
+          68.1011
+        ],
+        [
+          8,
+          121.1145
+        ],
+        [
+          10,
+          189.2156
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://www.opencompute.org/documents/oai-system-liquid-cooling-guidelines-in-ocp-template-mar-3-2023-update-pdf",
+      "type": "ocp-spec",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "OCP 白皮书案例数据；额定单点锚定（8 L/min, 117.2 kPa）+ 二次律形状插值，绝对值有据。注意：工质为 DI 水 30°C，按政策#5 不得直接用于 PG25 仿真，需按黏度修正后另立条目；PG25 修正：密度项按 SG@25°C 精确（原标定温度下比值变化 <0.4%），黏度项（湍流区 ~2-3%）未计入",
+    "redlight": null,
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "coldplate-hgx-h200-8gpu-tonecooling-38c-pg25",
+    "type": "cold-plate",
+    "vendor": "ToneCooling",
+    "model": "HGX H200 8-GPU + NVSwitch 冷板组（参考设计，整组并联）",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，ΔP∝ρ）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          4,
+          4.7536
+        ],
+        [
+          6,
+          10.7474
+        ],
+        [
+          8,
+          19.1179
+        ],
+        [
+          10,
+          29.8653
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://tonecooling.com/data-center-cold-plates/h200-gpu-cold-plate",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "厂商参考设计单点（8 L/min, 18.5 kPa）+ 二次律形状插值，形状借自同类，绝对值有据；纯水基准，PG25 使用需按政策#5 修正另立条目；PG25 修正：密度项按 SG@25°C 精确（原标定温度下比值变化 <0.4%），黏度项（湍流区 ~2-3%）未计入",
+    "redlight": null,
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "coldplate-hgx-h200-8gpu-tonecooling-tx-45c-pg25",
+    "type": "cold-plate",
+    "vendor": "ToneCooling Texas",
+    "model": "NVIDIA H200 GPU + NVSwitch 液冷组装（8 GPU + 4 NVSwitch）",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，ΔP∝ρ）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          6,
+          14.881
+        ],
+        [
+          8,
+          26.455
+        ],
+        [
+          10,
+          41.336
+        ],
+        [
+          12,
+          59.5239
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://www.tonecoolingtexas.com/nvidia-h200-liquid-cold-plate-usa/",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "厂商页单点（10 L/min 推荐，40 kPa 为 max 压降上限而非实测额定）+ 二次律形状插值，形状借自同类，绝对值有据且偏保守（按上限锚定）；纯水基准，PG25 使用需按政策#5 修正；PG25 修正：密度项按 SG@25°C 精确（原标定温度下比值变化 <0.4%），黏度项（湍流区 ~2-3%）未计入",
+    "redlight": null,
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "coldplate-gb200-superchip-tonecooling-kit-pg25",
+    "type": "cold-plate",
+    "vendor": "ToneCooling",
+    "model": "TC-BZP-GB200-01A（GB200 模块冷板套件：2×1200W GPU + 300W CPU，共 2700W）",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，ΔP∝ρ）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          1.5,
+          13.0208
+        ],
+        [
+          2,
+          23.1482
+        ],
+        [
+          2.5,
+          36.169
+        ],
+        [
+          3,
+          52.0834
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://tonecooling.com/nvidia-gb200-nvl72-cooling-requirements",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "厂商 datasheet 单点（2.5 L/min, 35±5 kPa）+ 二次律形状插值，形状借自同类，绝对值有据；纯水基准，PG25 使用需按政策#5 修正另立条目；PG25 修正：密度项按 SG@25°C 精确（原标定温度下比值变化 <0.4%），黏度项（湍流区 ~2-3%）未计入",
+    "redlight": null,
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "coldplate-sxm-hopper-ats-aic1012-pg25",
+    "type": "cold-plate",
+    "vendor": "ATS (Advanced Thermal Solutions) / ArctiQ NEXA",
+    "model": "ATS-AIC-1012（单 SXM 模块冷板，H100/H200/A100 SXM，5.5 kW）",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，ΔP∝ρ）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          1,
+          0.527
+        ],
+        [
+          2,
+          1.9325
+        ],
+        [
+          3,
+          4.2163
+        ],
+        [
+          4,
+          7.3165
+        ],
+        [
+          5,
+          11.1607
+        ],
+        [
+          6,
+          15.7697
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://www.qats.com/Products/Liquid-Cooling/AI-Chip-Coolers/ATS-AIC-1012",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "本库唯一多点实测表（厂商页面），但工质/温度未注明且数值偏低（6 L/min 仅 15.26 kPa，疑为低阻大流道设计或清水低黏度基准）；绝对值可用性待人工复核，PG25 场景必须修正后使用；PG25 修正：密度项按 SG@25°C 精确（原标定温度下比值变化 <0.4%），黏度项（湍流区 ~2-3%）未计入；原条目工质未注明（疑清水）——按清水基准修正是额外登记假设，用于敏感性/初选，正式选型须向厂商确认基准",
+    "redlight": null,
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  }
+]

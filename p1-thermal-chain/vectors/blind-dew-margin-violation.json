@@ -1,0 +1,20 @@
+{
+  "id": "blind-dew-margin-violation",
+  "note": "盲算：同 tropical 露点 26.076933；供液 27 → 裕度 0.923067 < 1.5 → dewPass=false 但 converged=true（方案不合格≠算错数：W27 名义上限在热带高湿季只剩 0.92 K，不可全用——memo §3.4）。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": { "mode": "given", "tSupplyC": 27 },
+      "flows": [{ "id": "n1", "qLpm": 12 }],
+      "loads": [{ "id": "n1", "qW": 0 }],
+      "room": { "tAirC": 35, "rhPct": 60, "minDewMarginK": 1.5 }
+    }
+  },
+  "checks": [
+    { "path": "dewMarginK", "kind": "closeTo", "value": 0.923067, "tol": 5e-4 },
+    { "path": "dewPass", "kind": "flag", "value": false },
+    { "path": "", "kind": "warningIncludes", "value": "露点" }
+  ],
+  "expectConverged": true
+}

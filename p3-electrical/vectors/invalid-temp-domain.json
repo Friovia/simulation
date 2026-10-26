@@ -1,0 +1,19 @@
+{
+  "id": "invalid-temp-domain",
+  "note": "输入无效路径：tC=150 超出 ρ(T) 线性近似登记域 0–100°C（线性外推到 150°C 偏差不可控）。",
+  "input": {
+    "schema": "p3/v0.1",
+    "case": {
+      "nominalV": 48,
+      "currentA": 1000,
+      "tC": 150,
+      "maxDropPct": 1,
+      "segs": [{ "id": "trunk-a", "material": "copper-iacs", "areaMm2": 800, "lenM": 2 }]
+    }
+  },
+  "checks": [
+    { "path": "", "kind": "inputInvalidIncludes", "value": "线性近似域" },
+    { "path": "", "kind": "exitCode", "value": 2 }
+  ],
+  "expectConverged": false
+}

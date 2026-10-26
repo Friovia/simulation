@@ -1,0 +1,24 @@
+{
+  "id": "invalid-extra-no-note",
+  "note": "输入无效路径：extraVolumeL 无来源登记（无源不入库政策——器件内容积是典型红灯数据）。",
+  "input": {
+    "schema": "p2/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "tMeanC": 35,
+      "pipes": [{ "id": "loop", "dMm": 50.8, "lenM": 3, "runs": 2 }],
+      "extraVolumeL": 40,
+      "hxSlopeWKPerK": 30250,
+      "fwsSupplyC": 20,
+      "q0W": 0,
+      "q1W": 40000,
+      "t0C": 20,
+      "timesS": [10]
+    }
+  },
+  "checks": [
+    { "path": "", "kind": "inputInvalidIncludes", "value": "extraVolumeNote" },
+    { "path": "", "kind": "exitCode", "value": 2 }
+  ],
+  "expectConverged": false
+}

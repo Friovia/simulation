@@ -1,0 +1,32 @@
+{
+  "id": "blind-parallel-diff",
+  "note": "盲算闭式解（独立于求解器实现）：泵 ΔP=A−B·Q（A=275 kPa, B=0.2 kPa/(L/min)），两条不同支路 ΔP=m₁q₁（m₁=0.8）、ΔP=m₂q₂（m₂=1.6，kPa/(L/min)）→ 并联 Q=P(1/m₁+1/m₂)=1.875P，代入 P=A−B·Q 得 P*[1+B(1/m₁+1/m₂)]=A → P*=275/1.375=200 kPa；q₁*=P*/m₁=250 L/min，q₂*=P*/m₂=125 L/min，Q*=375 L/min；份额按导纳 1.25:0.625=2:1 → sharePct=66.66666666666667 与 33.33333333333333（2/3、1/3）。曲线均为 3 个共线点的精确直线：pump3=(275−0.2Q)，br-a=0.8q，br-b=1.6q。工作点严格在 x 域内：泵 Q*=375∈(0,500)，支路 q₁*=250∈(0,400)、q₂*=125∈(0,150)，无钳位。已用自写分段线性插值+二分数值验算，与闭式解逐位一致。",
+  "input": {
+    "schema": "p0/v0.1",
+    "case": {
+      "tSupplyC": 32,
+      "tReturnC": 45,
+      "pump": { "curveId": "pump3", "yIs": "kPa" },
+      "branches": [
+        { "id": "lo", "curveIds": ["br-a"] },
+        { "id": "hi", "curveIds": ["br-b"] }
+      ]
+    },
+    "curves": {
+      "pump3": { "x": "L/min", "y": "kPa", "points": [[0, 275], [250, 225], [500, 175]] },
+      "br-a": { "x": "L/min", "y": "kPa", "points": [[0, 0], [200, 160], [400, 320]] },
+      "br-b": { "x": "L/min", "y": "kPa", "points": [[0, 0], [75, 120], [150, 240]] }
+    }
+  },
+  "checks": [
+    { "path": "qTotalLpm", "kind": "closeTo", "value": 375, "tol": 1e-6 },
+    { "path": "branches[0].qLpm", "kind": "closeTo", "value": 250, "tol": 1e-6 },
+    { "path": "branches[1].qLpm", "kind": "closeTo", "value": 125, "tol": 1e-6 },
+    { "path": "branches[0].dpKPa", "kind": "closeTo", "value": 200, "tol": 1e-6 },
+    { "path": "branches[1].dpKPa", "kind": "closeTo", "value": 200, "tol": 1e-6 },
+    { "path": "branches[0].sharePct", "kind": "closeTo", "value": 66.66666666666667, "tol": 1e-6 },
+    { "path": "branches[1].sharePct", "kind": "closeTo", "value": 33.33333333333333, "tol": 1e-6 },
+    { "path": "pumpDpKPa", "kind": "closeTo", "value": 200, "tol": 1e-6 },
+    { "path": "residual", "kind": "lessThan", "value": 1e-8 }
+  ]
+}

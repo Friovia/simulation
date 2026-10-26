@@ -1,0 +1,103 @@
+{
+  "id": "blind-supply-pipe",
+  "note": "盲算闭式解（独立于求解器实现，含 supplyPipe 层流）：泵 3 共线点 (0,105),(50,55),(100,5) → A=105, B=1；支路 (0,0),(2,90),(4,180) → m=45 kPa/(L/min)。干管 D=15 mm、单程 L=10 m、供+回内部 ×2（合计 20 m）、k=0（纯层流线性，无次损失平方项）；Hagen–Poiseuille（f=64/Re ⇒ ΔP=32μLv/D² ⇔ 128μLq/(πD⁴)）→ 干管单位流量压降 s=2×128μL/(πD⁴·6e7)=0.47752247 kPa/(L/min)（μ=1.78 mPa·s@T_mean=35°C，q 以 L/min 计；32μLv/D² 与 128μLq/πD⁴ 两式互验一致）。总平衡 A−B·q*=(m+s)·q* → q*=105/(1+45+0.47752247)=2.259157 L/min；支路耦合面压降 P_b=m·q*=101.662045 kPa；泵工作压差 P_p=105−q*=102.740843 kPa=P_b+s·q*（差值 1.078798 kPa 即干管耗散，恒等互验——q* 对 s 缺失或 ×4 均敏感，可判别实现）。Re 预验算：v=q*/(60000·πD²/4)=0.213070 m/s → Re=ρvD/μ=1840.8<2300，层流闭式成立。工作点严格域内：泵 2.2592∈(0,100)、支路 ∈(0,4)。已用自写插值+压力双层二分数值验算，差<1e-9。",
+  "input": {
+    "schema": "p0/v0.1",
+    "case": {
+      "tSupplyC": 30,
+      "tReturnC": 40,
+      "pump": {
+        "curveId": "pump-lp",
+        "yIs": "kPa"
+      },
+      "supplyPipe": {
+        "dMm": 15,
+        "lenM": 10,
+        "k": 0
+      },
+      "branches": [
+        {
+          "id": "only",
+          "curveIds": [
+            "br-lp"
+          ]
+        }
+      ]
+    },
+    "curves": {
+      "pump-lp": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            105
+          ],
+          [
+            50,
+            55
+          ],
+          [
+            100,
+            5
+          ]
+        ]
+      },
+      "br-lp": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            90
+          ],
+          [
+            4,
+            180
+          ]
+        ]
+      }
+    }
+  },
+  "checks": [
+    {
+      "path": "qTotalLpm",
+      "kind": "closeTo",
+      "value": 2.259156564931767,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].qLpm",
+      "kind": "closeTo",
+      "value": 2.259156564931767,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].dpKPa",
+      "kind": "closeTo",
+      "value": 101.66204542192952,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].sharePct",
+      "kind": "closeTo",
+      "value": 100,
+      "tol": 0.000001
+    },
+    {
+      "path": "pumpDpKPa",
+      "kind": "closeTo",
+      "value": 102.74084343506823,
+      "tol": 0.000001
+    },
+    {
+      "path": "residual",
+      "kind": "lessThan",
+      "value": 1e-8
+    }
+  ]
+}

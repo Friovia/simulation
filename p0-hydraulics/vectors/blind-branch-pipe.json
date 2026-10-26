@@ -1,0 +1,103 @@
+{
+  "id": "blind-branch-pipe",
+  "note": "盲算闭式解（独立于求解器实现，支路含管路层流）：泵 A=105, B=1（3 共线点 (0,105),(50,55),(100,5)）；支路曲线 m=45（(0,0),(2,90),(4,180)）+支路管 D=15 mm、L=6 m 单程（支路管不 ×2）、k=0。支路管单位流量压降 s_b=128μL/(πD⁴·6e7)=0.14325674 kPa/(L/min)（μ=1.78 mPa·s@T_mean=35°C）。支路 ΔP=(m+s_b)·q，与泵平衡 A−B·q*=(m+s_b)·q* → q*=105/(1+45+0.14325674)=2.275522 L/min；P*=支路总压降=(45+0.14325674)·q*=102.724478 kPa=105−q*（恒等互验）。Re 预验算：v=0.214614 m/s → Re=ρvD/μ=1854.1<2300 层流闭式成立。工作点严格域内：泵 2.2755∈(0,100)、支路 ∈(0,4)。已用自写插值+压力双层二分数值验算，差<1e-9。",
+  "input": {
+    "schema": "p0/v0.1",
+    "case": {
+      "tSupplyC": 30,
+      "tReturnC": 40,
+      "pump": {
+        "curveId": "pump-lp",
+        "yIs": "kPa"
+      },
+      "branches": [
+        {
+          "id": "only",
+          "curveIds": [
+            "br-lp"
+          ],
+          "pipe": {
+            "dMm": 15,
+            "lenM": 6,
+            "k": 0
+          }
+        }
+      ]
+    },
+    "curves": {
+      "pump-lp": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            105
+          ],
+          [
+            50,
+            55
+          ],
+          [
+            100,
+            5
+          ]
+        ]
+      },
+      "br-lp": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            90
+          ],
+          [
+            4,
+            180
+          ]
+        ]
+      }
+    }
+  },
+  "checks": [
+    {
+      "path": "qTotalLpm",
+      "kind": "closeTo",
+      "value": 2.2755220896596207,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].qLpm",
+      "kind": "closeTo",
+      "value": 2.2755220896596207,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].dpKPa",
+      "kind": "closeTo",
+      "value": 102.72447791034038,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].sharePct",
+      "kind": "closeTo",
+      "value": 100,
+      "tol": 0.000001
+    },
+    {
+      "path": "pumpDpKPa",
+      "kind": "closeTo",
+      "value": 102.72447791034038,
+      "tol": 0.000001
+    },
+    {
+      "path": "residual",
+      "kind": "lessThan",
+      "value": 1e-8
+    }
+  ]
+}

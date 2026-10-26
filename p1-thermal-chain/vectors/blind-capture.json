@@ -1,0 +1,20 @@
+{
+  "id": "blind-capture",
+  "note": "capture 参数化（review m4）：同 blind-node-energy 工况但 capturePct=70 → 液体负荷 7 kW（OCP ACS 口径冷板带走 70–75%）。定点：T̄=36.3739→ρ=1024.4581、cp=3905.50→C=800.205→ΔT=8.747748（序列 8.7539→8.7478→8.747748）。T_case 不受 capture 影响（hotSpot 独立）：仍 52。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": { "mode": "given", "tSupplyC": 32 },
+      "flows": [{ "id": "n1", "qLpm": 12 }],
+      "loads": [{ "id": "n1", "qW": 10000, "capturePct": 70, "hotSpot": { "qW": 1000, "thetaKPerW": 0.02, "tCaseMaxC": 75 } }]
+    }
+  },
+  "checks": [
+    { "path": "qTotalFluidW", "kind": "closeTo", "value": 7000, "tol": 1e-12 },
+    { "path": "nodes[0].qFluidW", "kind": "closeTo", "value": 7000, "tol": 1e-12 },
+    { "path": "dtRackK", "kind": "closeTo", "value": 8.747748, "tol": 1e-4 },
+    { "path": "nodes[0].tOutC", "kind": "closeTo", "value": 40.747748, "tol": 1e-4 },
+    { "path": "nodes[0].tCaseC", "kind": "closeTo", "value": 52, "tol": 1e-9 }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "blind-heterogeneous",
+  "note": "异构支路能量平衡（review m5）：n1 12 L/min/10 kW（同 blind-node-energy：ΔT=12.485249）；n2 24 L/min/6 kW：q=4e-4 m³/s，定点 T̄=33.8758→ρ=1025.7846、cp=3897.75→C=1599.30→ΔT=3.751638。机柜聚合（36 L/min/16 kW）：T̄=35.334→C=2399.37→ΔT=6.668422→T_r=38.668422。异构混合近似偏差 ~mK 量级（review n11 实测 1.9 mK）。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": { "mode": "given", "tSupplyC": 32 },
+      "flows": [
+        { "id": "n1", "qLpm": 12 },
+        { "id": "n2", "qLpm": 24 }
+      ],
+      "loads": [
+        { "id": "n1", "qW": 10000 },
+        { "id": "n2", "qW": 6000 }
+      ]
+    }
+  },
+  "checks": [
+    { "path": "nodes[0].dTK", "kind": "closeTo", "value": 12.485249, "tol": 1e-5 },
+    { "path": "nodes[1].dTK", "kind": "closeTo", "value": 3.751638, "tol": 1e-4 },
+    { "path": "nodes[1].tOutC", "kind": "closeTo", "value": 35.751638, "tol": 1e-4 },
+    { "path": "dtRackK", "kind": "closeTo", "value": 6.6684216, "tol": 2e-4 },
+    { "path": "tReturnC", "kind": "closeTo", "value": 38.6684216, "tol": 2e-4 }
+  ]
+}

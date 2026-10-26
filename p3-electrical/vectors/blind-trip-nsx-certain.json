@@ -1,0 +1,31 @@
+{
+  "id": "blind-trip-nsx-certain",
+  "note": "盲算（脱扣带三态）：Schneider NSX DC TM-D 1P/2P，In=100 A → Ii 固定 1000 A（±20% → 带 [800,1200] A）；Ir=1.0×In=100 A。负载 90 A ≤ 100 → overloadOk=true。Isc=1300 A > 1200（带上限）→ instantaneous=certain-trip（确定脱扣）。压降部分：800 mm² 2 m @90 A，drop=90×8.6205e-5=0.00775845 V",
+  "input": {
+    "schema": "p3/v0.2",
+    "case": {
+      "nominalV": 48,
+      "currentA": 90,
+      "tC": 20,
+      "maxDropPct": 1,
+      "segs": [
+        { "id": "feeder", "material": "copper-iacs", "areaMm2": 800, "lenM": 2 }
+      ],
+      "trip": {
+        "loadA": 90,
+        "prospectiveIscA": 1300,
+        "device": { "deviceId": "nsx-tmd-1p2p-fixed", "inA": 100 }
+      }
+    }
+  },
+  "checks": [
+    { "path": "trip.irA", "kind": "closeTo", "value": 100, "tol": 1e-09 },
+    { "path": "trip.iiA", "kind": "closeTo", "value": 1000, "tol": 1e-09 },
+    { "path": "trip.iiBand[0]", "kind": "closeTo", "value": 800, "tol": 1e-09 },
+    { "path": "trip.iiBand[1]", "kind": "closeTo", "value": 1200, "tol": 1e-09 },
+    { "path": "trip.overloadOk", "kind": "flag", "value": true },
+    { "path": "trip.instantaneous", "kind": "flag", "value": "certain-trip" },
+    { "path": "converged", "kind": "flag", "value": true },
+    { "kind": "exitCode", "value": 0 }
+  ]
+}

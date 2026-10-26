@@ -1,0 +1,15 @@
+{
+  "id": "invalid-load-id",
+  "note": "输入无效路径：load id 在 flows 中无对应流量（热链必须知道每支路流量）。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": { "mode": "given", "tSupplyC": 32 },
+      "flows": [{ "id": "n1", "qLpm": 12 }],
+      "loads": [{ "id": "nx", "qW": 1000 }]
+    }
+  },
+  "checks": [{ "path": "", "kind": "inputInvalidIncludes", "value": "flows" }],
+  "expectConverged": false
+}

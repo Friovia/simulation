@@ -1,0 +1,27 @@
+{
+  "id": "blind-ampacity-awm-pass",
+  "note": "盲算（载流量查表）：100×10 mm 铜排，AWM DC still（40°C 环境+50K 温升，无柜）表值 1950 A；环境=基准 40°C → kEnv=1；单条承载 1750 A ≤ 1950 → pass=true。表值无算式（规格匹配制，100×10 行原值）。压降部分（勘误：初版盲算漏 ρ(T) 修正，已重推）：tC=40 → ρ=1.7241e-8×(1+0.00393×20)=1.85961426e-8；R_total=2×ρ×2/1e-3=7.438457040e-5 Ω → drop=1750×7.438457040e-5=0.1301729982 V=0.2711937%<1%",
+  "input": {
+    "schema": "p3/v0.2",
+    "case": {
+      "nominalV": 48,
+      "currentA": 1750,
+      "tC": 40,
+      "maxDropPct": 1,
+      "segs": [
+        { "id": "bus-100x10", "material": "copper-iacs", "areaMm2": 1000, "lenM": 2 }
+      ],
+      "ampacity": { "tableId": "awm-dc-40c-50k", "widthMm": 100, "thicknessMm": 10, "condition": "still" }
+    }
+  },
+  "checks": [
+    { "path": "ampacity.ratedA", "kind": "closeTo", "value": 1950, "tol": 1e-09 },
+    { "path": "ampacity.kEnv", "kind": "closeTo", "value": 1, "tol": 1e-12 },
+    { "path": "ampacity.ratedDeratedA", "kind": "closeTo", "value": 1950, "tol": 1e-09 },
+    { "path": "ampacity.perBarA", "kind": "closeTo", "value": 1750, "tol": 1e-09 },
+    { "path": "ampacity.pass", "kind": "flag", "value": true },
+    { "path": "totalDropV", "kind": "closeTo", "value": 0.1301729982, "tol": 1e-09 },
+    { "path": "converged", "kind": "flag", "value": true },
+    { "kind": "exitCode", "value": 0 }
+  ]
+}

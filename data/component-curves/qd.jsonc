@@ -1,0 +1,597 @@
+// ============================================================================
+// UQD 快接头（UQD04 / UQD06）插拔对（mated pair）ΔP–流量曲线
+// 字段与数据政策见 data/component-curves/schema.md；检索日期一律 2026-10-17
+//
+// 总体说明（适用于本文件全部条目）：
+// 1. 单只 vs 一对：厂商公开数据均按 mated pair（公母头成对连接）给出——
+//    OCP 规范 9.1.4 明确在 fully mated 状态测压降；Stäubli 标注流向
+//    socket→plug；Danfoss 注明 Cv 按 OCP 额定流量法测得。各条 notes 再单独注明。
+// 2. 工质基准：Stäubli=水(998 kg/m³, 1.08 cSt≈20°C)，Danfoss=水@60°F，
+//    OCP=水@25±5°C；CPC/Amphenol 未标注（按 OCP 合规惯例推定为水，已在
+//    uncertainty 标注）。全部条目为水基——PG25 修正条目尚未建立（政策第 5 条，
+//    修正方法待定，湍流区 ΔP 对黏度弱敏感，短期仿真可先按水基用并标注）。
+// 3. 曲线来源说明：各厂商均未公开可机读的 ΔP-Q 数值表（曲线图为矢量图），
+//    公开的是 Cv 值。本文件曲线 = 厂商 Cv + OCP v2.0.0 规范自带的定义式
+//    ΔP[psi] = (Q[gpm]/Cv)²（即 Cv=Q/√P，水 SG=1，B=0 忽略低 Re 线性项）
+//    换算而得。绝对值有据（Cv 由厂商在额定流量点实测），形状为标准二次式，
+//    符合政策第 2 条"形状借自同类、绝对值有据"。换算系数：
+//    1 L/min = 0.264172 GPM，1 psi = 6.89476 kPa。
+// 4. 流量范围覆盖：典型支路 5–40 L/min 中，UQD04 仅覆盖到 ~10 L/min
+//    （5 m/s 流速限：Stäubli 8.48 / Danfoss 9.4 L/min），UQD06 覆盖到
+//    ~15 L/min（5 m/s：Stäubli 11.55 / Danfoss 14.7 L/min）。
+//    20 L/min 以上为二次式外推（超 5 m/s 参考点，厂商未验证）；40 L/min
+//    支路不在 UQD04/06 可用范围，应选 UQD08 或并联——本文件未收 UQD08。
+// ============================================================================
+[
+  {
+    "id": "qd-staubli-uqd04-mated",
+    "type": "qd",
+    "vendor": "Stäubli",
+    "model": "UQD04 (hand mate, 插拔对)",
+    "fluid": { "basis": "水 @ ~20°C (998 kg/m³, 1.08 cSt, 厂商试验条件)" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [[3, 3.3], [5, 9.1], [6.44, 15.1], [8.48, 26.2], [10, 36.4]]
+    },
+    "source": {
+      "url": "https://www.staubli.com/content/dam/fcs/brochures/products/uqd/uqd-thermal-management-standard-staubli-en.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "厂商只公开 Cv=1.15（额定流量点实测），ΔP-Q 曲线由 OCP 定义式 ΔP=(Q/Cv)² 换算（形状为标准二次式，绝对值有据）；10 L/min 超出厂商 5 m/s 参考点(8.48 L/min)为外推",
+    "notes": "mated pair 压降（试验流向 socket→plug，成对连接状态）；6.44 L/min 为 OCP 额定流量；只覆盖支路 5–40 L/min 的低端，>10 L/min 不可用"
+  },
+  {
+    "id": "qd-staubli-uqd06-mated",
+    "type": "qd",
+    "vendor": "Stäubli",
+    "model": "UQD06 (hand mate, 插拔对)",
+    "fluid": { "basis": "水 @ ~20°C (998 kg/m³, 1.08 cSt, 厂商试验条件)" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [[5, 1.9], [8, 4.8], [11.36, 9.8], [15, 17.0], [20, 30.3]]
+    },
+    "source": {
+      "url": "https://www.staubli.com/content/dam/fcs/brochures/products/uqd/uqd-thermal-management-standard-staubli-en.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "厂商只公开 Cv=2.52（额定流量点实测），ΔP-Q 曲线由 OCP 定义式 ΔP=(Q/Cv)² 换算（形状为标准二次式，绝对值有据）；>11.55 L/min(厂商 5 m/s 点)为外推",
+    "notes": "mated pair 压降（试验流向 socket→plug，成对连接状态）；11.36 L/min 为 OCP 额定流量；20 L/min 以上到 40 L/min 支路上限为未验证外推"
+  },
+  {
+    "id": "qd-danfoss-uqd04-mated",
+    "type": "qd",
+    "vendor": "Danfoss",
+    "model": "Hansen UQD04 (插拔对)",
+    "fluid": { "basis": "水 @ 60°F / 15.6°C (fact sheet 流量曲线图标注)" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [[3, 2.3], [5, 6.4], [6.4, 10.5], [9.4, 22.7], [10, 25.6]]
+    },
+    "source": {
+      "url": "https://assets.danfoss.com/documents/latest/604118/AI423953312825en-001401.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "厂商只公开 Cv=1.37（按 OCP 额定流量 6.4 L/min 测得），ΔP-Q 曲线由 OCP 定义式换算（形状为标准二次式，绝对值有据）；fact sheet 附图为矢量曲线，数值未直接公开",
+    "notes": "mated pair 压降（Cv 按 OCP 规范法在额定流量测定，即成对状态）；9.4 L/min 为厂商 5 m/s 流速点；只覆盖支路低端"
+  },
+  {
+    "id": "qd-danfoss-uqd06-mated",
+    "type": "qd",
+    "vendor": "Danfoss",
+    "model": "Hansen UQD06 (插拔对)",
+    "fluid": { "basis": "水 @ 60°F / 15.6°C (fact sheet 流量曲线图标注)" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [[5, 2.1], [8, 5.5], [11.4, 11.1], [14.7, 18.5], [20, 34.3]]
+    },
+    "source": {
+      "url": "https://assets.danfoss.com/documents/latest/604118/AI423953312825en-001401.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "厂商只公开 Cv=2.37（按 OCP 额定流量 11.4 L/min 测得），ΔP-Q 曲线由 OCP 定义式换算（形状为标准二次式，绝对值有据）；>14.7 L/min(厂商 5 m/s 点)为外推",
+    "notes": "mated pair 压降（Cv 按 OCP 规范法测定）；Danfoss 宣称超 OCP 流量要求至少 25%；20 L/min 以上为未验证外推"
+  },
+  {
+    "id": "qd-cpc-everis-uqd04-mated",
+    "type": "qd",
+    "vendor": "CPC (Colder Products)",
+    "model": "Everis UQD04 / UQDB04 (插拔对)",
+    "fluid": { "basis": "工质基准未标注，按 OCP 合规惯例推定为水" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [[3, 2.5], [5, 6.9], [6.44, 11.5], [8, 17.7], [10, 27.6]]
+    },
+    "source": {
+      "url": "https://www.cpcworldwide.com/Liquid-Cooling/Products/Blind-Mate/UQD04-UQDB04",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "页面只给 Average Cv 1.32 (Kv 1.14) 单值，工质基准未标注；ΔP-Q 曲线由 OCP 定义式换算（形状为标准二次式，绝对值有据）；>8.5 L/min 为外推",
+    "notes": "Cv 标注 Average，按 OCP 惯例推定 mated pair @额定流量；产品页有 water flow rate 图片但无数值，spec sheet PDF 需向 CPC 索取"
+  },
+  {
+    "id": "qd-amphenol-uqd04-mated",
+    "type": "qd",
+    "vendor": "Amphenol",
+    "model": "UQD Rev 2.0 UQD04 (插拔对)",
+    "fluid": { "basis": "工质基准未标注，按 OCP 合规惯例推定为水" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [[3, 2.4], [5, 6.6], [6.44, 10.9], [8.48, 19.0], [10, 26.4]]
+    },
+    "source": {
+      "url": "https://amphenol-industrial.com/wp-content/uploads/amphenol/liquid-cooling-systems-ic-26.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "目录只给 Minimum Cv=1.35（保守下限，实测应更好），ΔP-Q 曲线由 OCP 定义式换算（形状为标准二次式，绝对值有据）；>8.5 L/min 为外推",
+    "notes": "Cv 标注为 Rev 2.0 产品 Minimum Cv value，按 mated pair 理解；目录另有旧代 UQD04 Cv=1.29 未单独立条"
+  },
+  {
+    "id": "qd-amphenol-uqd06-mated",
+    "type": "qd",
+    "vendor": "Amphenol",
+    "model": "UQD Rev 2.0 UQD06 (插拔对)",
+    "fluid": { "basis": "工质基准未标注，按 OCP 合规惯例推定为水" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [[5, 1.7], [8, 4.2], [11.36, 8.5], [15, 14.9], [20, 26.4]]
+    },
+    "source": {
+      "url": "https://amphenol-industrial.com/wp-content/uploads/amphenol/liquid-cooling-systems-ic-26.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "目录只给 Minimum Cv=2.7（保守下限），ΔP-Q 曲线由 OCP 定义式换算（形状为标准二次式，绝对值有据）；>~15 L/min 为外推",
+    "notes": "Cv 标注为 Rev 2.0 产品 Minimum Cv value，按 mated pair 理解；目录另有旧代 UQD06 Cv=2.32 未单独立条"
+  },
+  {
+    "id": "qd-ocp-uqd04-mincv-envelope",
+    "type": "qd",
+    "vendor": "OCP",
+    "model": "UQD04 规范最差情况包络 (Cv_min=1.1, 任一合规厂商)",
+    "fluid": { "basis": "水 @ 25±5°C (OCP 9.1.4 试验条件)" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [[5, 9.9], [6.44, 16.5], [8, 25.4], [10, 39.8]]
+    },
+    "source": {
+      "url": "https://www.opencompute.org/wp-content/uploads/2026/10/OCP-Design-Spec_UQD_v2.0.0.pdf",
+      "type": "ocp-spec",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "非实测产品曲线，是规范限值包络：Table 6 规定 UQD04 Cv_min=1.1（最差合规件），经 OCP 定义式换算的最差情况 ΔP；最好情况 Cv_max=1.6 对应 @6.44 L/min 仅 7.8 kPa；规范建议的 ΔP=AQ²+BQ 系数 A/B 本版(v2.0.0)标注 planned review 尚未定义",
+    "notes": "mated pair（OCP 9.1.4 fully mated 状态、ISO 18869 §13 方法、水、25±5°C）；用于支路最差压降校核；6.44 L/min 为 OCP 额定流量"
+  },
+  {
+    "id": "qd-ocp-uqd06-mincv-envelope",
+    "type": "qd",
+    "vendor": "OCP",
+    "model": "UQD06 规范最差情况包络 (Cv_min=2.2, 任一合规厂商)",
+    "fluid": { "basis": "水 @ 25±5°C (OCP 9.1.4 试验条件)" },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [[5, 2.5], [11.36, 12.8], [15, 22.4], [20, 39.8]]
+    },
+    "source": {
+      "url": "https://www.opencompute.org/wp-content/uploads/2026/10/OCP-Design-Spec_UQD_v2.0.0.pdf",
+      "type": "ocp-spec",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "非实测产品曲线，是规范限值包络：Table 6 规定 UQD06 Cv_min=2.2（最差合规件），经 OCP 定义式换算的最差情况 ΔP；最好情况 Cv_max=3.3 对应 @11.36 L/min 仅 5.7 kPa；A/B 系数本版尚未定义",
+    "notes": "mated pair（OCP 9.1.4 fully mated 状态）；11.36 L/min 为 OCP 额定流量；20 L/min 以上外推未验证"
+  },
+  {
+    "id": "qd-cpc-everis-uqd06-mated",
+    "type": "qd",
+    "vendor": "CPC (Colder Products)",
+    "model": "Everis UQD06 / UQDB06 (插拔对)",
+    "fluid": { "basis": "不明" },
+    "curve": null,
+    "source": {
+      "url": "https://www.cpcworldwide.com/Home/Campaigns/Everis-UQD06-UQDB06-QD",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "无公开数值，无法评估",
+    "redlight": "缺 CPC Everis UQD06/UQDB06 的 ΔP-流量曲线或 Cv 数值。已查渠道：① cpcworldwide.com UQD06/UQDB06 产品与 campaign 页（仅营销描述，无数值）；② cpcworldwide.com 盲插系列产品总览（未列 UQD06 条目规格）；③ web 检索（EN）cpcworldwide.com 域内无公开 Cv/压降数据；④ spec sheet PDF 站内未挂、需表单索取。欠账：向 CPC 索取 UQD06 spec sheet（含 water flow rate 图）"
+  },
+  {
+    "id": "qd-dnp-uqd04-06-mated",
+    "type": "qd",
+    "vendor": "DNP (Dai Nippon Printing)",
+    "model": "UQD04 / UQD06 (插拔对)",
+    "fluid": { "basis": "不明" },
+    "curve": null,
+    "source": {
+      "url": "https://www.global.dnp/en/biz",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "无公开数值，无法评估",
+    "redlight": "缺 DNP UQD04/UQD06 的 ΔP-流量曲线或 Cv——完全无公开数据。已查渠道：① web 检索 EN（DNP UQD pressure drop datasheet 等）；② web 检索 JP（大日本印刷 UQD 液冷 圧力損失）；③ site: 限定 global.dnp / dnp.co.jp 域内检索（无 UQD 液冷相关命中）；④ DNP 英文液冷页 https://www.dnp.co.jp/eng/solution/liquid_cooling/ 已 404 跳转。结论：DNP 性能曲线仅走直销/技术渠道。欠账：经销售渠道索取，或仿真暂用 OCP 包络条目替代（DNP 产品合规 OCP）"
+  },
+  {
+    "id": "qd-staubli-uqd04-mated-pg25",
+    "type": "qd",
+    "vendor": "Stäubli",
+    "model": "UQD04 (hand mate, 插拔对)",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，Cv 口径 ΔP∝SG）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          3,
+          3.4102
+        ],
+        [
+          5,
+          9.4039
+        ],
+        [
+          6.44,
+          15.6043
+        ],
+        [
+          8.48,
+          27.0751
+        ],
+        [
+          10,
+          37.6158
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://www.staubli.com/content/dam/fcs/brochures/products/uqd/uqd-thermal-management-standard-staubli-en.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "厂商只公开 Cv=1.15（额定流量点实测），ΔP-Q 曲线由 OCP 定义式 ΔP=(Q/Cv)² 换算（形状为标准二次式，绝对值有据）；10 L/min 超出厂商 5 m/s 参考点(8.48 L/min)为外推；PG25 修正：密度项按 SG 精确，黏度项（湍流区 ~2-3%）未计入",
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "qd-staubli-uqd06-mated-pg25",
+    "type": "qd",
+    "vendor": "Stäubli",
+    "model": "UQD06 (hand mate, 插拔对)",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，Cv 口径 ΔP∝SG）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          5,
+          1.9635
+        ],
+        [
+          8,
+          4.9603
+        ],
+        [
+          11.36,
+          10.1273
+        ],
+        [
+          15,
+          17.5678
+        ],
+        [
+          20,
+          31.312
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://www.staubli.com/content/dam/fcs/brochures/products/uqd/uqd-thermal-management-standard-staubli-en.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "厂商只公开 Cv=2.52（额定流量点实测），ΔP-Q 曲线由 OCP 定义式 ΔP=(Q/Cv)² 换算（形状为标准二次式，绝对值有据）；>11.55 L/min(厂商 5 m/s 点)为外推；PG25 修正：密度项按 SG 精确，黏度项（湍流区 ~2-3%）未计入",
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "qd-danfoss-uqd04-mated-pg25",
+    "type": "qd",
+    "vendor": "Danfoss",
+    "model": "Hansen UQD04 (插拔对)",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，Cv 口径 ΔP∝SG）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          3,
+          2.3768
+        ],
+        [
+          5,
+          6.6138
+        ],
+        [
+          6.4,
+          10.8507
+        ],
+        [
+          9.4,
+          23.4582
+        ],
+        [
+          10,
+          26.455
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://assets.danfoss.com/documents/latest/604118/AI423953312825en-001401.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "厂商只公开 Cv=1.37（按 OCP 额定流量 6.4 L/min 测得），ΔP-Q 曲线由 OCP 定义式换算（形状为标准二次式，绝对值有据）；fact sheet 附图为矢量曲线，数值未直接公开；PG25 修正：密度项按 SG 精确，黏度项（湍流区 ~2-3%）未计入",
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "qd-danfoss-uqd06-mated-pg25",
+    "type": "qd",
+    "vendor": "Danfoss",
+    "model": "Hansen UQD06 (插拔对)",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，Cv 口径 ΔP∝SG）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          5,
+          2.1701
+        ],
+        [
+          8,
+          5.6837
+        ],
+        [
+          11.4,
+          11.4707
+        ],
+        [
+          14.7,
+          19.1179
+        ],
+        [
+          20,
+          35.4456
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://assets.danfoss.com/documents/latest/604118/AI423953312825en-001401.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "厂商只公开 Cv=2.37（按 OCP 额定流量 11.4 L/min 测得），ΔP-Q 曲线由 OCP 定义式换算（形状为标准二次式，绝对值有据）；>14.7 L/min(厂商 5 m/s 点)为外推；PG25 修正：密度项按 SG 精确，黏度项（湍流区 ~2-3%）未计入",
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "qd-cpc-everis-uqd04-mated-pg25",
+    "type": "qd",
+    "vendor": "CPC (Colder Products)",
+    "model": "Everis UQD04 / UQDB04 (插拔对)",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，Cv 口径 ΔP∝SG）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          3,
+          2.5835
+        ],
+        [
+          5,
+          7.1305
+        ],
+        [
+          6.44,
+          11.8841
+        ],
+        [
+          8,
+          18.2912
+        ],
+        [
+          10,
+          28.5218
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://www.cpcworldwide.com/Liquid-Cooling/Products/Blind-Mate/UQD04-UQDB04",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "页面只给 Average Cv 1.32 (Kv 1.14) 单值，工质基准未标注；ΔP-Q 曲线由 OCP 定义式换算（形状为标准二次式，绝对值有据）；>8.5 L/min 为外推；PG25 修正：密度项按 SG 精确，黏度项（湍流区 ~2-3%）未计入",
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "qd-amphenol-uqd04-mated-pg25",
+    "type": "qd",
+    "vendor": "Amphenol",
+    "model": "UQD Rev 2.0 UQD04 (插拔对)",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，Cv 口径 ΔP∝SG）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          3,
+          2.4802
+        ],
+        [
+          5,
+          6.8204
+        ],
+        [
+          6.44,
+          11.2641
+        ],
+        [
+          8.48,
+          19.6346
+        ],
+        [
+          10,
+          27.2818
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://amphenol-industrial.com/wp-content/uploads/amphenol/liquid-cooling-systems-ic-26.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "目录只给 Minimum Cv=1.35（保守下限，实测应更好），ΔP-Q 曲线由 OCP 定义式换算（形状为标准二次式，绝对值有据）；>8.5 L/min 为外推；PG25 修正：密度项按 SG 精确，黏度项（湍流区 ~2-3%）未计入",
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "qd-amphenol-uqd06-mated-pg25",
+    "type": "qd",
+    "vendor": "Amphenol",
+    "model": "UQD Rev 2.0 UQD06 (插拔对)",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，Cv 口径 ΔP∝SG）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          5,
+          1.7568
+        ],
+        [
+          8,
+          4.3403
+        ],
+        [
+          11.36,
+          8.7839
+        ],
+        [
+          15,
+          15.3977
+        ],
+        [
+          20,
+          27.2818
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://amphenol-industrial.com/wp-content/uploads/amphenol/liquid-cooling-systems-ic-26.pdf",
+      "type": "datasheet",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "目录只给 Minimum Cv=2.7（保守下限），ΔP-Q 曲线由 OCP 定义式换算（形状为标准二次式，绝对值有据）；>~15 L/min 为外推；PG25 修正：密度项按 SG 精确，黏度项（湍流区 ~2-3%）未计入",
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "qd-ocp-uqd04-mincv-envelope-pg25",
+    "type": "qd",
+    "vendor": "OCP",
+    "model": "UQD04 规范最差情况包络 (Cv_min=1.1, 任一合规厂商)",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，Cv 口径 ΔP∝SG）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          5,
+          10.2307
+        ],
+        [
+          6.44,
+          17.0511
+        ],
+        [
+          8,
+          26.2484
+        ],
+        [
+          10,
+          41.1293
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://www.opencompute.org/wp-content/uploads/2026/10/OCP-Design-Spec_UQD_v2.0.0.pdf",
+      "type": "ocp-spec",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "非实测产品曲线，是规范限值包络：Table 6 规定 UQD04 Cv_min=1.1（最差合规件），经 OCP 定义式换算的最差情况 ΔP；最好情况 Cv_max=1.6 对应 @6.44 L/min 仅 7.8 kPa；规范建议的 ΔP=AQ²+BQ 系数 A/B 本版(v2.0.0)标注 planned review 尚未定义；PG25 修正：密度项按 SG 精确，黏度项（湍流区 ~2-3%）未计入",
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  },
+  {
+    "id": "qd-ocp-uqd06-mincv-envelope-pg25",
+    "type": "qd",
+    "vendor": "OCP",
+    "model": "UQD06 规范最差情况包络 (Cv_min=2.2, 任一合规厂商)",
+    "fluid": {
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正：SG=ρ(DOWFROST LC25,25°C)/ρ(水,25°C)=1030.3/997.0，Cv 口径 ΔP∝SG）"
+    },
+    "curve": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          5,
+          2.5835
+        ],
+        [
+          11.36,
+          13.2275
+        ],
+        [
+          15,
+          23.1482
+        ],
+        [
+          20,
+          41.1293
+        ]
+      ]
+    },
+    "source": {
+      "url": "https://www.opencompute.org/wp-content/uploads/2026/10/OCP-Design-Spec_UQD_v2.0.0.pdf",
+      "type": "ocp-spec",
+      "retrieved": "2026-10-17"
+    },
+    "uncertainty": "非实测产品曲线，是规范限值包络：Table 6 规定 UQD06 Cv_min=2.2（最差合规件），经 OCP 定义式换算的最差情况 ΔP；最好情况 Cv_max=3.3 对应 @11.36 L/min 仅 5.7 kPa；A/B 系数本版尚未定义；PG25 修正：密度项按 SG 精确，黏度项（湍流区 ~2-3%）未计入",
+    "notes": "政策第 5 条：PG25 工况优先用本条，不用水基准原条目"
+  }
+]

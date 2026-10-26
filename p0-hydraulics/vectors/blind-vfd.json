@@ -1,0 +1,106 @@
+{
+  "id": "blind-vfd",
+  "note": "盲算闭式解（独立于求解器实现）：kPa 泵 3 共线点 (0,200),(125,150),(250,100) → A=200, B=0.4；变频 ratedHz=60、speedHz=42 → scale=0.7。相似定律对直线泵曲线的等效式：ΔP(q)=scale²A−scale·B·q=98−0.28q；支路 br2 3 共线点 → m=0.7。稳态 q*(m+scale·B)=scale²A → q*=98/0.98=100 L/min（代数精确）；P*=m·q*=70 kPa；泵侧互验 scale²·(200−0.4×100/0.7)=0.49×142.857143=70 ✓。查表点 q*/scale=142.857143∈(0,250) 严格域内，且 q*=100<250×0.7=175（VFD 域收缩后仍无越界）；支路 100∈(0,200)。pumpHz 回显实际频率 42。已用自写插值+压力双层二分数值验算，差<1e-9。",
+  "input": {
+    "schema": "p0/v0.1",
+    "case": {
+      "tSupplyC": 30,
+      "tReturnC": 40,
+      "pump": {
+        "curveId": "pump-vfd",
+        "yIs": "kPa",
+        "ratedHz": 60,
+        "speedHz": 42
+      },
+      "branches": [
+        {
+          "id": "only",
+          "curveIds": [
+            "br2"
+          ]
+        }
+      ]
+    },
+    "curves": {
+      "pump-vfd": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            200
+          ],
+          [
+            125,
+            150
+          ],
+          [
+            250,
+            100
+          ]
+        ]
+      },
+      "br2": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            0
+          ],
+          [
+            100,
+            70
+          ],
+          [
+            200,
+            140
+          ]
+        ]
+      }
+    }
+  },
+  "checks": [
+    {
+      "path": "qTotalLpm",
+      "kind": "closeTo",
+      "value": 100,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].qLpm",
+      "kind": "closeTo",
+      "value": 100,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].dpKPa",
+      "kind": "closeTo",
+      "value": 70,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].sharePct",
+      "kind": "closeTo",
+      "value": 100,
+      "tol": 0.000001
+    },
+    {
+      "path": "pumpDpKPa",
+      "kind": "closeTo",
+      "value": 70,
+      "tol": 0.000001
+    },
+    {
+      "path": "pumpHz",
+      "kind": "closeTo",
+      "value": 42,
+      "tol": 1e-9
+    },
+    {
+      "path": "residual",
+      "kind": "lessThan",
+      "value": 1e-8
+    }
+  ]
+}

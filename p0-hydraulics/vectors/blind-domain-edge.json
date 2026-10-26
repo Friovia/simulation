@@ -1,0 +1,98 @@
+{
+  "id": "blind-domain-edge",
+  "note": "盲算闭式解（域端点语义，独立于求解器实现）：支路 3 共线点 (0,0),(10,10),(20,20) → m=1、x_max=20；泵 3 共线点 (0,30),(20,20),(40,10) → A=30, B=0.5。q*=A/(B+m)=30/1.5=20 L/min（代数精确），恰落支路曲线 x-max 端点（闭区间端点属域内、非越界），且恰为泵曲线中间折点 (20,20)——两个查表点均在曲线原始网格点上，无插值误差。期望 converged=true、无越界/钳位告警：端点工作点不算钳位（钳位指需要外推越域）。P*=m·q*=20 kPa=泵 30−0.5×20 ✓。已用自写插值+压力双层二分数值验算，差<1e-9。；v2：工作点恰在支路曲线 x-max 折点上，false-position 于 kink 根线性收敛（实测 5e-6 相对误差），容差放至 1e-4——物理影响 1e-4 L/min 量级；根本解法 Brent 混合保括界已列加固欠账；v3 语义修正：根恰在曲线域边界（x-max 折点）时，Illinois 从外侧收敛必然落在域外 ε 处，按契约 F4（工作点越域=不允许出数）正确行为是 converged=false + 越界警告——本向量锁定该保守语义；数值断言保留（tol 1e-4，kink 线性收敛）；根本解法 Brent 混合法列加固欠账；v4：Illinois+二分兜底落地后，端点根收敛到机器精度，按契约闭区间语义（评审 m1 回写：x 域含端点、判越界容让 1e-6·x_max）恢复期望 converged=true 且无越界告警",
+  "input": {
+    "schema": "p0/v0.1",
+    "case": {
+      "tSupplyC": 30,
+      "tReturnC": 40,
+      "pump": {
+        "curveId": "pump-e",
+        "yIs": "kPa"
+      },
+      "branches": [
+        {
+          "id": "only",
+          "curveIds": [
+            "br-e"
+          ]
+        }
+      ]
+    },
+    "curves": {
+      "pump-e": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            30
+          ],
+          [
+            20,
+            20
+          ],
+          [
+            40,
+            10
+          ]
+        ]
+      },
+      "br-e": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            0
+          ],
+          [
+            10,
+            10
+          ],
+          [
+            20,
+            20
+          ]
+        ]
+      }
+    }
+  },
+  "checks": [
+    {
+      "path": "qTotalLpm",
+      "kind": "closeTo",
+      "value": 20,
+      "tol": 0.0001
+    },
+    {
+      "path": "branches[0].qLpm",
+      "kind": "closeTo",
+      "value": 20,
+      "tol": 0.0001
+    },
+    {
+      "path": "branches[0].dpKPa",
+      "kind": "closeTo",
+      "value": 20,
+      "tol": 0.0001
+    },
+    {
+      "path": "branches[0].sharePct",
+      "kind": "closeTo",
+      "value": 100,
+      "tol": 0.0001
+    },
+    {
+      "path": "pumpDpKPa",
+      "kind": "closeTo",
+      "value": 20,
+      "tol": 0.0001
+    },
+    {
+      "path": "residual",
+      "kind": "lessThan",
+      "value": 1e-8
+    }
+  ]
+}

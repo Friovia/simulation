@@ -1,0 +1,15 @@
+{
+  "id": "blind-theta-flow-domain",
+  "note": "θ 数据流量域检查：θ 域 [2,5] L/min，支路流量 12 L/min（splitN=1）越上界 → 冷板 θ 域外无据 → converged=false。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": { "mode": "given", "tSupplyC": 32 },
+      "flows": [{ "id": "n1", "qLpm": 12 }],
+      "loads": [{ "id": "n1", "qW": 10000, "hotSpot": { "qW": 1000, "thetaKPerW": 0.02, "thetaFlowLpmRange": [2, 5] } }]
+    }
+  },
+  "checks": [{ "path": "", "kind": "warningIncludes", "value": "θ 数据域" }],
+  "expectConverged": false
+}

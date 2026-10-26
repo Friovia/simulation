@@ -1,0 +1,5 @@
+* text=auto
+*.jsonc text
+*.json text
+*.md text
+*.ts text

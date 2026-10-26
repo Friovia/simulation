@@ -1,0 +1,9 @@
+{
+  "name": "@liquid/p2-transient",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "P2 瞬态骨架：环路流体热容（几何+PG25 物性）+ 一阶负荷阶跃闭式（时间常数下界）。金属热容/泵切换/控制回路为红灯",
+  "bin": { "p2": "bin/p2.mjs" },
+  "engines": { "node": ">=22" }
+}

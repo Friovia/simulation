@@ -1,0 +1,357 @@
+{
+  "schema": "p0/v0.1",
+  "dataVersion": "component-curves@2026-10-20-hx78",
+  "meta": {
+    "客户 / RFQ": "演示工况（内部）",
+    "机柜配置": "ORv3 风格 · 8× 8-OAM 液冷节点 · in-rack CDU 100 kW",
+    "房间条件": "待登记（温度/RH/海拔 → P1 露点裕度接管）",
+    "负载": "8× ~10 kW（待 P1 热链细化）"
+  },
+  "case": {
+    "tSupplyC": 32,
+    "tReturnC": 42,
+    "pump": {
+      "curveId": "pump-vertiv-coolchip100kw-inrack-pg25",
+      "yIs": "kPa"
+    },
+    "supplyPipe": {
+      "dMm": 50.8,
+      "lenM": 3,
+      "k": 3,
+      "epsMm": 0.045
+    },
+    "branches": [
+      {
+        "id": "node-1",
+        "curveIds": [
+          "coldplate-oai-8oam-4x2-pcl-pg25",
+          "qd-ocp-uqd06-mincv-envelope-pg25"
+        ],
+        "pipe": {
+          "dMm": 19.1,
+          "lenM": 2.5,
+          "k": 2
+        },
+        "minLpm": 8
+      },
+      {
+        "id": "node-2",
+        "curveIds": [
+          "coldplate-oai-8oam-4x2-pcl-pg25",
+          "qd-ocp-uqd06-mincv-envelope-pg25"
+        ],
+        "pipe": {
+          "dMm": 19.1,
+          "lenM": 2.5,
+          "k": 2
+        },
+        "minLpm": 8
+      },
+      {
+        "id": "node-3",
+        "curveIds": [
+          "coldplate-oai-8oam-4x2-pcl-pg25",
+          "qd-ocp-uqd06-mincv-envelope-pg25"
+        ],
+        "pipe": {
+          "dMm": 19.1,
+          "lenM": 2.5,
+          "k": 2
+        },
+        "minLpm": 8
+      },
+      {
+        "id": "node-4",
+        "curveIds": [
+          "coldplate-oai-8oam-4x2-pcl-pg25",
+          "qd-ocp-uqd06-mincv-envelope-pg25"
+        ],
+        "pipe": {
+          "dMm": 19.1,
+          "lenM": 2.5,
+          "k": 2
+        },
+        "minLpm": 8
+      },
+      {
+        "id": "node-5",
+        "curveIds": [
+          "coldplate-oai-8oam-4x2-pcl-pg25",
+          "qd-ocp-uqd06-mincv-envelope-pg25"
+        ],
+        "pipe": {
+          "dMm": 19.1,
+          "lenM": 2.5,
+          "k": 2
+        },
+        "minLpm": 8
+      },
+      {
+        "id": "node-6",
+        "curveIds": [
+          "coldplate-oai-8oam-4x2-pcl-pg25",
+          "qd-ocp-uqd06-mincv-envelope-pg25"
+        ],
+        "pipe": {
+          "dMm": 19.1,
+          "lenM": 2.5,
+          "k": 2
+        },
+        "minLpm": 8
+      },
+      {
+        "id": "node-7",
+        "curveIds": [
+          "coldplate-oai-8oam-4x2-pcl-pg25",
+          "qd-ocp-uqd06-mincv-envelope-pg25"
+        ],
+        "pipe": {
+          "dMm": 19.1,
+          "lenM": 2.5,
+          "k": 2
+        },
+        "minLpm": 8
+      },
+      {
+        "id": "node-8",
+        "curveIds": [
+          "coldplate-oai-8oam-4x2-pcl-pg25",
+          "qd-ocp-uqd06-mincv-envelope-pg25"
+        ],
+        "pipe": {
+          "dMm": 19.1,
+          "lenM": 2.5,
+          "k": 2
+        },
+        "minLpm": 8
+      }
+    ]
+  },
+  "curves": {
+    "pump-vertiv-coolchip100kw-inrack-pg25": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          0,
+          149.0675
+        ],
+        [
+          40,
+          146.0458
+        ],
+        [
+          80,
+          134.9665
+        ],
+        [
+          120,
+          118.8511
+        ],
+        [
+          160,
+          95.6852
+        ],
+        [
+          200,
+          66.476
+        ]
+      ],
+      "basis": "PG25 @ 25°C（库条目按 SG 1.0334 修正；单锚点+形状插值 ±15%；2026-10-20 评审统一）",
+      "provenance": {
+        "url": "https://www.vertiv.com/49c795/globalassets/products/thermal-management/high-density-solutions/vertiv-coolchip-cdu/vertiv-coolchip-cdu-100kw-data-sheet-sl-71348.pdf",
+        "type": "datasheet",
+        "retrieved": "2026-10-17",
+        "uncertainty": "单锚点（100 kW 级额定点）+ 同类离心泵形状插值（政策 2），±15% 起"
+      }
+    },
+    "coldplate-oai-8oam-4x2-pcl-pg25": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          6,
+          24.8
+        ],
+        [
+          8,
+          44.1
+        ],
+        [
+          10,
+          68.9
+        ],
+        [
+          12,
+          99.2
+        ],
+        [
+          14,
+          135.7
+        ]
+      ],
+      "basis": "PG25（OCP OAI System Liquid Cooling Guidelines，8-OAM 整链 PCL 4x2）",
+      "provenance": {
+        "url": "https://www.opencompute.org/documents/oai-system-liquid-cooling-guidelines-in-ocp-template-mar-3-2023-update-pdf",
+        "type": "ocp-spec",
+        "retrieved": "2026-10-17",
+        "uncertainty": "OAI 指南官方曲线（8x1 为两点锚，4x2 形状借同族）"
+      }
+    },
+    "qd-ocp-uqd06-mincv-envelope-pg25": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          5,
+          2.5835
+        ],
+        [
+          11.36,
+          13.2275
+        ],
+        [
+          15,
+          23.1482
+        ],
+        [
+          20,
+          41.1293
+        ]
+      ],
+      "basis": "PG25 @ 25°C（水基准 ×SG 1.0334 修正；OCP UQD Design Spec v2.0.0 法定 Cv_min 包络）",
+      "provenance": {
+        "url": "https://www.opencompute.org/documents/quick-disconnect-uqd-design-specification-v2-0-0-pdf",
+        "type": "ocp-spec",
+        "retrieved": "2026-10-17",
+        "uncertainty": "法定最差情况包络（Cv_min=2.2 经 ΔP=(Q/Cv)²·SG 换算）；实际压降 ≤ 此值"
+      }
+    },
+    "pump-nvent-cdu40-pg25": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          0,
+          243.1591
+        ],
+        [
+          5,
+          224.6612
+        ],
+        [
+          10,
+          205.0266
+        ],
+        [
+          15,
+          185.5987
+        ],
+        [
+          20,
+          166.0674
+        ],
+        [
+          25,
+          146.7428
+        ],
+        [
+          30,
+          127.5216
+        ],
+        [
+          35,
+          108.197
+        ],
+        [
+          40,
+          88.8724
+        ],
+        [
+          45,
+          69.6512
+        ],
+        [
+          50,
+          50.4299
+        ],
+        [
+          55,
+          31.4154
+        ]
+      ],
+      "basis": "PG25 @ 25°C（数字化水基准 ×SG 1.0334 修正：ΔP∝ρ）",
+      "provenance": {
+        "url": "https://d14aeh40s5zf9b.cloudfront.net/userfiles/productdocuments/HOFFCDU0402R001Q/SPEC_56278578_SpecificationSheet.pdf",
+        "type": "datasheet",
+        "retrieved": "2026-10-20",
+        "uncertainty": "像素轨迹数字化（±1 psi/±1 LPM，±3%）+ PG25 密度修正（黏度项 2-3% 未计）；20 psi bypass：<26 LPM 段泵本体能力偏乐观；Default Pump Mode"
+      }
+    },
+    "pump-nvent-cdu40-max-pg25": {
+      "x": "L/min",
+      "y": "kPa",
+      "points": [
+        [
+          0,
+          248.4294
+        ],
+        [
+          5,
+          231.7917
+        ],
+        [
+          10,
+          214.1205
+        ],
+        [
+          15,
+          196.5527
+        ],
+        [
+          20,
+          179.1916
+        ],
+        [
+          25,
+          161.8305
+        ],
+        [
+          30,
+          144.8827
+        ],
+        [
+          35,
+          127.8316
+        ],
+        [
+          40,
+          110.7805
+        ],
+        [
+          45,
+          93.9361
+        ],
+        [
+          50,
+          77.2983
+        ],
+        [
+          55,
+          60.8673
+        ],
+        [
+          60,
+          44.4362
+        ]
+      ],
+      "basis": "PG25 @ 25°C（数字化水基准 ×SG 1.0334 修正：ΔP∝ρ）",
+      "provenance": {
+        "url": "https://d14aeh40s5zf9b.cloudfront.net/userfiles/productdocuments/HOFFCDU0402R001Q/SPEC_56278578_SpecificationSheet.pdf",
+        "type": "datasheet",
+        "retrieved": "2026-10-20",
+        "uncertainty": "像素轨迹数字化 ±3%（Maximum Pump Performance 红线）+ PG25 密度修正；bypass <33 LPM 段偏乐观；功耗 970W"
+      }
+    }
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "id": "blind-vfd-head",
+  "note": "盲算闭式解（独立于求解器实现，m 泵+变频复合自推）：换算与相似定律可交换 → ΔP(q)=scale²·c·H_r(q/scale)，H_r=20−0.04x，c=ρg/1000=10.05377758（ρ=1025.2@T_mean=35°C，30/40 供回）。展开为直线 ΔP(q)=A_s−B_s·q：A_s=scale²·c·H₀=0.49×201.0755516=98.52702028 kPa，B_s=scale·c·h=0.7×0.402151103=0.281505772 kPa/(L/min)，scale=35/50=0.7。支路 m=0.7 → q*=A_s/(m+B_s)=98.52702028/0.981505772=100.383536 L/min；P*=m·q*=70.268475 kPa；pumpHeadM=工作点实际扬程=P*/c=6.989261 m，与 scale²·H_r(q*/scale)=0.49×(20−0.04×143.4051) 双路径互验一致。查表点 q*/scale=143.4051∈(0,200)、支路 100.384∈(0,200) 严格域内。pumpHz 回显 35。数值双层二分验算差<1e-9。",
+  "input": {
+    "schema": "p0/v0.1",
+    "case": {
+      "tSupplyC": 30,
+      "tReturnC": 40,
+      "pump": {
+        "curveId": "pump-h",
+        "yIs": "m",
+        "ratedHz": 50,
+        "speedHz": 35
+      },
+      "branches": [
+        {
+          "id": "only",
+          "curveIds": [
+            "br3"
+          ]
+        }
+      ]
+    },
+    "curves": {
+      "pump-h": {
+        "x": "L/min",
+        "y": "m",
+        "points": [
+          [
+            0,
+            20
+          ],
+          [
+            100,
+            16
+          ],
+          [
+            200,
+            12
+          ]
+        ]
+      },
+      "br3": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            0
+          ],
+          [
+            100,
+            70
+          ],
+          [
+            200,
+            140
+          ]
+        ]
+      }
+    }
+  },
+  "checks": [
+    {
+      "path": "qTotalLpm",
+      "kind": "closeTo",
+      "value": 100.38353626707756,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].qLpm",
+      "kind": "closeTo",
+      "value": 100.38353626707756,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].dpKPa",
+      "kind": "closeTo",
+      "value": 70.2684753869543,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].sharePct",
+      "kind": "closeTo",
+      "value": 100,
+      "tol": 0.000001
+    },
+    {
+      "path": "pumpDpKPa",
+      "kind": "closeTo",
+      "value": 70.2684753869543,
+      "tol": 0.000001
+    },
+    {
+      "path": "pumpHeadM",
+      "kind": "closeTo",
+      "value": 6.989260984521829,
+      "tol": 0.000001
+    },
+    {
+      "path": "pumpHz",
+      "kind": "closeTo",
+      "value": 35,
+      "tol": 1e-9
+    },
+    {
+      "path": "residual",
+      "kind": "lessThan",
+      "value": 1e-8
+    }
+  ]
+}

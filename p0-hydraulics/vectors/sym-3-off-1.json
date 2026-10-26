@@ -1,0 +1,28 @@
+{
+  "id": "sym-3-off-1",
+  "note": "关断再分配 + 闭式解（v2，修复 F4）。泵 A=180,B=0.15；支路 m=1.5 → 1.5q=180−0.3q → 剩余支路 q*=100，Q*=200，P*=150 kPa；关断支路流量 0、其余相等",
+  "input": {
+    "schema": "p0/v0.1",
+    "case": {
+      "tSupplyC": 32,
+      "tReturnC": 45,
+      "pump": { "curveId": "pump-sym", "yIs": "kPa" },
+      "branches": [
+        { "id": "a", "curveIds": ["cp-sym"] },
+        { "id": "b", "curveIds": ["cp-sym"], "shutdown": true },
+        { "id": "c", "curveIds": ["cp-sym"] }
+      ]
+    },
+    "curves": {
+      "pump-sym": { "x": "L/min", "y": "kPa", "points": [[0, 180], [200, 150], [400, 120]] },
+      "cp-sym": { "x": "L/min", "y": "kPa", "points": [[0, 0], [80, 120], [160, 240]] }
+    }
+  },
+  "checks": [
+    { "path": "branches[0].qLpm", "kind": "equalsPath", "path2": "branches[2].qLpm", "tol": 1e-9 },
+    { "path": "branches[0].qLpm", "kind": "closeTo", "value": 100, "tol": 1e-6 },
+    { "path": "branches[1].qLpm", "kind": "closeTo", "value": 0, "tol": 1e-9 },
+    { "path": "qTotalLpm", "kind": "closeTo", "value": 200, "tol": 1e-6 },
+    { "path": "residual", "kind": "lessThan", "value": 1e-8 }
+  ]
+}

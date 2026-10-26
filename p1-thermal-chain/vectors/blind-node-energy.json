@@ -1,0 +1,22 @@
+{
+  "id": "blind-node-energy",
+  "note": "盲算（能量平衡定点手迭代，Dow LC25 表 5K 步进线性插值）：q=12 L/min=2e-4 m³/s，Q=10 kW，T_in=32。ΔT₀=Q/(ρ(32)q·cp(32))=12.5056 → T̄=38.2528，ρ=1023.4435、cp=3913.01，C=800.949 → ΔT₁=12.4852 → T̄=38.2426，C=800.945 → ΔT₂=12.485250（序列 12.5056→12.4852→12.485250，收敛）。T_case=32+0.02×1000=52（inlet 参考闭式），裕度 75−52=23。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": { "mode": "given", "tSupplyC": 32 },
+      "flows": [{ "id": "n1", "qLpm": 12 }],
+      "loads": [{ "id": "n1", "qW": 10000, "hotSpot": { "qW": 1000, "thetaKPerW": 0.02, "tCaseMaxC": 75 } }]
+    }
+  },
+  "checks": [
+    { "path": "dtRackK", "kind": "closeTo", "value": 12.485249, "tol": 1e-5 },
+    { "path": "tReturnC", "kind": "closeTo", "value": 44.485249, "tol": 1e-5 },
+    { "path": "nodes[0].dTK", "kind": "closeTo", "value": 12.485249, "tol": 1e-5 },
+    { "path": "nodes[0].tOutC", "kind": "closeTo", "value": 44.485249, "tol": 1e-5 },
+    { "path": "nodes[0].tOutC", "kind": "equalsPath", "path2": "tReturnC", "tol": 1e-9 },
+    { "path": "nodes[0].tCaseC", "kind": "closeTo", "value": 52, "tol": 1e-9 },
+    { "path": "nodes[0].tCaseMarginC", "kind": "closeTo", "value": 23, "tol": 1e-9 }
+  ]
+}

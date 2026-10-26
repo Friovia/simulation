@@ -1,0 +1,20 @@
+{
+  "id": "blind-dew-30-70",
+  "note": "盲算：γ=ln0.7+17.625×30/273.04=1.5798545，Td=243.04×1.5798545/16.0451455=23.930469（气象表 30°C/70% 露点≈23.9 ✓）。供液 25 → 裕度 1.069531 < 1.5 红线不通过。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": { "mode": "given", "tSupplyC": 25 },
+      "flows": [{ "id": "n1", "qLpm": 12 }],
+      "loads": [{ "id": "n1", "qW": 0 }],
+      "room": { "tAirC": 30, "rhPct": 70, "minDewMarginK": 1.5 }
+    }
+  },
+  "checks": [
+    { "path": "dewPointC", "kind": "closeTo", "value": 23.93047, "tol": 2e-5 },
+    { "path": "dewMarginK", "kind": "closeTo", "value": 1.069531, "tol": 5e-4 },
+    { "path": "dewPass", "kind": "flag", "value": false }
+  ],
+  "expectConverged": true
+}

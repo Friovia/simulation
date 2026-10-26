@@ -1,0 +1,24 @@
+{
+  "id": "invalid-metal-material",
+  "note": "域红旗：metal.material='titanium' 不在 thermo.ts 材料库（无源不入库）→ inputInvalid + exitCode 2。另验 v0.1 schema 携带 metal 项被拒（版本门）。",
+  "input": {
+    "schema": "p2/v0.2",
+    "case": {
+      "fluid": "pg25",
+      "tMeanC": 35,
+      "pipes": [{ "id": "p1", "dMm": 25, "lenM": 2, "runs": 2 }],
+      "metal": [{ "id": "mystery", "material": "titanium", "massKg": 5 }],
+      "hxSlopeWKPerK": 4000,
+      "fwsSupplyC": 20,
+      "q0W": 1000,
+      "q1W": 2000,
+      "t0C": 20.25,
+      "timesS": [1]
+    }
+  },
+  "expectConverged": false,
+  "checks": [
+    { "kind": "inputInvalidIncludes", "value": "material 非法" },
+    { "kind": "exitCode", "value": 2 }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "blind-hx-ua",
+  "note": "盲算（UA 逆流 ε-NTU + 热侧定点手迭代）：UA=3000 W/K，Q=40 kW，T_f=10°C，FWS 21.6 L/min 水→C_f=1504.8（C_min）。TCS 45 L/min：T̄*=37.7054→ρ=1023.7391,cp=3.910822→C_t=3002.75→C_r=0.501144→NTU=1.993620→ε=(1−e^−0.994535)/(1−0.501144·e^−0.994535)=0.7734857→T_hot_in=10+40000/(0.7734857×1504.8)=44.36600→T_s=44.36600−40000/3002.75=31.04485（iter3 变化<1e-4）。T_fout=10+40000/1504.8=36.5816055。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": {
+        "mode": "hx",
+        "hx": { "mode": "ua", "uaWK": 3000, "arrangement": "counterflow", "source": "示例向量：UA 为假设值（真实值须选型软件/commissioning）" },
+        "fws": { "supplyC": 10, "flowLpm": 21.6, "cpJkgK": 4180, "rhoKgM3": 1000, "note": "水（Incropera Table A.6 量级）" }
+      },
+      "flows": [{ "id": "n1", "qLpm": 45 }],
+      "loads": [{ "id": "n1", "qW": 40000 }]
+    }
+  },
+  "checks": [
+    { "path": "hx.eps", "kind": "closeTo", "value": 0.7734857, "tol": 2e-5 },
+    { "path": "hx.ntu", "kind": "closeTo", "value": 1.99362041, "tol": 1e-8 },
+    { "path": "hx.cMinWKPerK", "kind": "closeTo", "value": 1504.8, "tol": 1e-9 },
+    { "path": "hx.tHotInC", "kind": "closeTo", "value": 44.36600, "tol": 2e-4 },
+    { "path": "tSupplyC", "kind": "closeTo", "value": 31.04485, "tol": 2e-4 },
+    { "path": "tReturnC", "kind": "equalsPath", "path2": "hx.tHotInC", "tol": 1e-9 },
+    { "path": "nodes[0].dTK", "kind": "equalsPath", "path2": "dtRackK", "tol": 1e-9 },
+    { "path": "hx.tColdOutC", "kind": "closeTo", "value": 36.5816055, "tol": 1e-8 }
+  ],
+  "expectConverged": true
+}

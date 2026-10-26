@@ -1,0 +1,32 @@
+{
+  "id": "blind-flowband-untrusted",
+  "note": "斜率流量域检查：实际 98.9 L/min vs 转写额定 500 L/min 偏离 80.2% > 25% 登记带宽 → converged=false（S 仅额定流量有据）。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": {
+        "mode": "hx",
+        "hx": { "mode": "slope", "curveId": "hx-cdu121", "ratedTcsLpm": 500 },
+        "fws": { "supplyC": 29, "flowLpm": 100, "cpJkgK": 4180, "rhoKgM3": 1000, "note": "水（Incropera Table A.6 量级）" }
+      },
+      "flows": [
+        { "id": "n1", "qLpm": 49.45 },
+        { "id": "n2", "qLpm": 49.45 }
+      ],
+      "loads": [
+        { "id": "n1", "qW": 40000 },
+        { "id": "n2", "qW": 40000 }
+      ]
+    },
+    "curves": {
+      "hx-cdu121": {
+        "x": "°C", "y": "kW",
+        "points": [[0, 0], [2, 60.5], [4, 121], [6, 181.5]],
+        "flowBasis": "二次侧额定 120 L/min, 1.15 bar"
+      }
+    }
+  },
+  "checks": [{ "path": "", "kind": "warningIncludes", "value": "额定流量域" }],
+  "expectConverged": false
+}

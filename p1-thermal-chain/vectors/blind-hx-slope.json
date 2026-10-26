@@ -1,0 +1,49 @@
+{
+  "id": "blind-hx-slope",
+  "note": "盲算（CoolChip CDU121 锚点 121 kW@4K ATD→S=30.25 kW/K）：Q=80 kW→ATD=80000/30250=2.6446281 K→T_s=29+2.6446281=31.6446281（闭式）。机柜定点（q_tot=98.9 L/min=1.6483333e-3）：T̄*=37.7058→ρ=1023.7389,cp=3.910823→ṁC=6599.37 W/K→ΔT=12.122371（iter3 变化<1e-7）→T_r=43.76700。FWS：C=1000×(100/60000)×4180=6966.67→T_fout=29+80000/6966.67=40.4832536 < T_r ✓。流量偏离 |98.9/120−1|=17.6%→告警带（±10%~±25%）内。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": {
+        "mode": "hx",
+        "hx": { "mode": "slope", "curveId": "hx-cdu121", "ratedTcsLpm": 120 },
+        "fws": { "supplyC": 29, "flowLpm": 100, "cpJkgK": 4180, "rhoKgM3": 1000, "note": "水 25°C 典型值（Incropera Table A.6 量级）" }
+      },
+      "flows": [
+        { "id": "n1", "qLpm": 49.45 },
+        { "id": "n2", "qLpm": 49.45 }
+      ],
+      "loads": [
+        { "id": "n1", "qW": 40000 },
+        { "id": "n2", "qW": 40000 }
+      ]
+    },
+    "curves": {
+      "hx-cdu121": {
+        "x": "°C", "y": "kW",
+        "points": [[0, 0], [2, 60.5], [4, 121], [6, 181.5]],
+        "flowBasis": "二次侧额定 120 L/min, 1.15 bar",
+        "basis": "水/PG25 双口径未区分（Vertiv 数据表）",
+        "provenance": {
+          "url": "https://www.vertiv.com/49c795/globalassets/products/thermal-management/high-density-solutions/vertiv-coolchip-cdu/vertiv-coolchip-cdu-100kw-data-sheet-sl-71348.pdf",
+          "type": "datasheet",
+          "retrieved": "2026-10-17",
+          "uncertainty": "官方数据表仅单点额定 121 kW @ 4°C ATD；斜率 30.25 kW/K=121/4，非锚点为 ε-NTU 线性外推"
+        }
+      }
+    }
+  },
+  "checks": [
+    { "path": "tSupplyC", "kind": "closeTo", "value": 31.6446281, "tol": 1e-9 },
+    { "path": "hx.atdK", "kind": "closeTo", "value": 2.6446281, "tol": 1e-9 },
+    { "path": "hx.slopeWKPerK", "kind": "closeTo", "value": 30250, "tol": 1e-9 },
+    { "path": "hx.tColdOutC", "kind": "closeTo", "value": 40.4832536, "tol": 1e-8 },
+    { "path": "dtRackK", "kind": "closeTo", "value": 12.122371, "tol": 2e-4 },
+    { "path": "tReturnC", "kind": "closeTo", "value": 43.7670, "tol": 2e-4 },
+    { "path": "nodes[0].tOutC", "kind": "equalsPath", "path2": "tReturnC", "tol": 1e-9 },
+    { "path": "nodes[0].dTK", "kind": "equalsPath", "path2": "dtRackK", "tol": 1e-9 },
+    { "path": "", "kind": "warningIncludes", "value": "额定流量域" }
+  ],
+  "expectConverged": true
+}

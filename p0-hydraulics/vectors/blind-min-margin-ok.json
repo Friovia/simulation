@@ -1,0 +1,93 @@
+{
+  "id": "blind-min-margin-ok",
+  "note": "盲算闭式解（min 保证流量达标例，独立于求解器实现）：与 blind-min-margin 同构，仅 minLpm=85<q*=100 → minMarginLpm=100−85=+15（正裕度），无 min 告警，converged=true。q*=200/(0.4+1.6)=100 L/min、P*=160 kPa（代数精确，同 blind-single 曲线）。工作点严格域内。已用自写插值+压力双层二分数值验算，差<1e-9。",
+  "input": {
+    "schema": "p0/v0.1",
+    "case": {
+      "tSupplyC": 30,
+      "tReturnC": 40,
+      "pump": {
+        "curveId": "pump1",
+        "yIs": "kPa"
+      },
+      "branches": [
+        {
+          "id": "only",
+          "curveIds": [
+            "br1"
+          ],
+          "minLpm": 85
+        }
+      ]
+    },
+    "curves": {
+      "pump1": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            200
+          ],
+          [
+            125,
+            150
+          ],
+          [
+            250,
+            100
+          ]
+        ]
+      },
+      "br1": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            0
+          ],
+          [
+            75,
+            120
+          ],
+          [
+            150,
+            240
+          ]
+        ]
+      }
+    }
+  },
+  "checks": [
+    {
+      "path": "qTotalLpm",
+      "kind": "closeTo",
+      "value": 100,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].qLpm",
+      "kind": "closeTo",
+      "value": 100,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].minMarginLpm",
+      "kind": "closeTo",
+      "value": 15,
+      "tol": 0.000001
+    },
+    {
+      "path": "branches[0].sharePct",
+      "kind": "closeTo",
+      "value": 100,
+      "tol": 0.000001
+    },
+    {
+      "path": "residual",
+      "kind": "lessThan",
+      "value": 1e-8
+    }
+  ]
+}

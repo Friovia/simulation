@@ -1,0 +1,9 @@
+{
+  "name": "@liquid/p3-electrical",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "P3 48V 电气：busbar 直流压降/损耗（铜 IACS 常数带源）。脱扣协调/载流量/短路电流为红灯",
+  "bin": { "p3": "bin/p3.mjs" },
+  "engines": { "node": ">=22" }
+}

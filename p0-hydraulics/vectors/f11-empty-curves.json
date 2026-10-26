@@ -1,0 +1,54 @@
+{
+  "id": "f11-empty-curves",
+  "note": "F11 失败路径向量：curveIds 为空且无 pipe 的支路（修复前 qMax=Infinity → 全 NaN）",
+  "input": {
+    "schema": "p0/v0.1",
+    "case": {
+      "tSupplyC": 32,
+      "tReturnC": 45,
+      "pump": {
+        "curveId": "p1",
+        "yIs": "kPa"
+      },
+      "branches": [
+        {
+          "id": "a",
+          "curveIds": []
+        }
+      ]
+    },
+    "curves": {
+      "p1": {
+        "x": "L/min",
+        "y": "kPa",
+        "points": [
+          [
+            0,
+            200
+          ],
+          [
+            125,
+            150
+          ],
+          [
+            250,
+            100
+          ]
+        ]
+      }
+    }
+  },
+  "expectConverged": false,
+  "checks": [
+    {
+      "path": "qTotalLpm",
+      "kind": "warningIncludes",
+      "value": "curveIds 为空且无 pipe"
+    },
+    {
+      "path": "",
+      "kind": "exitCode",
+      "value": 2
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "blind-props-domain-untrusted",
+  "note": "M1 回归锚点（review e1）：given 50°C + 4 L/min 带 12 kW → ΔT=12000/267.47=44.86（T̄=72.4°C 物性端点钳位）→T_out≈94.86°C。物性表域越界与 LC25 许用 90°C 双红旗 → converged=false（旧版只告警，已修）。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": { "mode": "given", "tSupplyC": 50 },
+      "flows": [{ "id": "n1", "qLpm": 4 }],
+      "loads": [{ "id": "n1", "qW": 12000 }]
+    }
+  },
+  "checks": [
+    { "path": "nodes[0].tOutC", "kind": "closeTo", "value": 94.864, "tol": 1e-3 },
+    { "path": "", "kind": "warningIncludes", "value": "物性评估温度" },
+    { "path": "", "kind": "warningIncludes", "value": "许用上限" }
+  ],
+  "expectConverged": false
+}

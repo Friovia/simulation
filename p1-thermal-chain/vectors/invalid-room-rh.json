@@ -1,0 +1,16 @@
+{
+  "id": "invalid-room-rh",
+  "note": "输入无效路径：rhPct=0 → ln(0) 数值爆炸，域检查 (0,100] 拒绝 → inputInvalid（CLI 退 2）。",
+  "input": {
+    "schema": "p1/v0.1",
+    "case": {
+      "fluid": "pg25",
+      "supplySource": { "mode": "given", "tSupplyC": 32 },
+      "flows": [{ "id": "n1", "qLpm": 12 }],
+      "loads": [{ "id": "n1", "qW": 0 }],
+      "room": { "tAirC": 35, "rhPct": 0, "minDewMarginK": 1.5 }
+    }
+  },
+  "checks": [{ "path": "", "kind": "inputInvalidIncludes", "value": "rhPct" }],
+  "expectConverged": false
+}

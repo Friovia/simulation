@@ -1,0 +1,9 @@
+{
+  "name": "@liquid/p0-hydraulics",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "P0 1D 液冷水力求解器：纯函数库 input JSON → output JSON，零依赖",
+  "bin": { "p0": "bin/p0.mjs" },
+  "engines": { "node": ">=22" }
+}

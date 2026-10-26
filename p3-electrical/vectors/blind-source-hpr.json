@@ -1,0 +1,75 @@
+{
+  "id": "blind-source-hpr",
+  "note": "盲算（源侧短路模型 v0.3）：8×ORv3 HPR 5.5kW PSU 并联。R_eff = droop 1V ÷ 110A ÷ 8 = 1.13636e-3 Ω；I_sc_ideal = 50V / R_eff = 44000 A（金属性短路理想上界）；I_limited = 8×110×136% = 1196.8 A（50ms 峰值窗口）；I_ocp = 8×110×120% = 1056 A。44000 > 1056 → protectionWillAct=true（源 SCP/OCP 必动作）。脱扣联动：瞬时校核用 I_limited=1196.8 A 对 NM8N In=160 带 [1280,1920]——1196.8 < 1280 → no-trip（断路器不动作，源保护先行）。手算全闭式。",
+  "input": {
+    "schema": "p3/v0.3",
+    "case": {
+      "nominalV": 48,
+      "currentA": 300,
+      "tC": 25,
+      "maxDropPct": 1,
+      "segs": [
+        {
+          "id": "bus",
+          "material": "copper-iacs",
+          "areaMm2": 800,
+          "lenM": 2
+        }
+      ],
+      "source": {
+        "specId": "orv3-hpr-psu",
+        "units": 8
+      },
+      "trip": {
+        "device": {
+          "deviceId": "nm8n-250-fixed",
+          "inA": 160
+        }
+      }
+    }
+  },
+  "checks": [
+    {
+      "path": "source.rEffOhm",
+      "kind": "closeTo",
+      "value": 0.0011363636363636363,
+      "tol": 1e-09
+    },
+    {
+      "path": "source.iScIdealA",
+      "kind": "closeTo",
+      "value": 44000,
+      "tol": 1e-06
+    },
+    {
+      "path": "source.iLimitedA",
+      "kind": "closeTo",
+      "value": 1196.8,
+      "tol": 1e-09
+    },
+    {
+      "path": "source.iOcpA",
+      "kind": "closeTo",
+      "value": 1056,
+      "tol": 1e-09
+    },
+    {
+      "path": "source.protectionWillAct",
+      "kind": "flag",
+      "value": true
+    },
+    {
+      "path": "trip.instantaneous",
+      "kind": "flag",
+      "value": "no-trip"
+    },
+    {
+      "kind": "warningIncludes",
+      "value": "源侧短路"
+    },
+    {
+      "kind": "exitCode",
+      "value": 0
+    }
+  ]
+}
